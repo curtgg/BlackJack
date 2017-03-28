@@ -64,5 +64,5 @@ def testDeck():
         print(deck.draw())
         pass
 
-
-testDeck()
+#uncomment to run test cases
+#testDeck()
