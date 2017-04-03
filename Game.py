@@ -12,6 +12,12 @@ pygame.init()
 size = width, height = 1200, 750 #very odd size
 screen = pygame.display.set_mode(size)
 
+def getInput():
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.KEYDOWN:
+            return event.key
+
 def getDealerTurn(deck):
     '''
     Computes the dealer hand.
@@ -100,11 +106,22 @@ def getPlayerTurn(player,deck):
         '''
         while True:
             #TODO: MAKE GET INPUT FUNCTION
-            events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_2:
-                        print("yay")
+            keyNum = getInput()
+            #Hit
+            if keyNum == pygame.K_1:
+                print("Hit")
+            #Stand
+            if keyNum == pygame.K_2:
+                print("Stand")
+            #Double
+            if keyNum == pygame.K_3:
+                print("Double")
+            #Split
+            if keyNum == pygame.K_4:
+                print("Split")
+            #For debug, exit
+            if keyNum == pygame.K_5:
+                sys.exit()
 
 
     if len(player.hand) < 2:

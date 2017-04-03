@@ -19,7 +19,6 @@ class Deck:
     def __init__(self):
         self._array = []
 
-
     def newDeck(self,n=1):
         """
         Add's n decks, 1 if no argument is given
