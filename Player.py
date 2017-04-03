@@ -1,4 +1,4 @@
-
+from Deck import Deck
 class Player:
     def __init__(self):
         self.hand = []
@@ -12,14 +12,24 @@ class Player:
     def addCard(self,card):
         self.hand.append(card)
 
-    def Hit(self):
-        pass
+    def Hit(self,deck):
+        self.hand.append(deck.draw())
 
     def Stand(self):
         pass
 
-    def Double(self):
+    def Double(self,deck):
+        self.hand.append(deck.draw())
+        self.bet *= 2
+
+    def Split(self,deck):
+        #TODO: this will be complex
+        #plan is to create a second hand for the player
+        #treat it as its own entity
         pass
 
-    def Split(self):
+    def playerWin(self):
         pass
+
+    def playerLoss(self):
+        pass    

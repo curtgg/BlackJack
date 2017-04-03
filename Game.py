@@ -109,7 +109,8 @@ def getPlayerTurn(player,deck):
             keyNum = getInput()
             #Hit
             if keyNum == pygame.K_1:
-                print("Hit")
+                player.Hit(deck)
+                print("Hit: {}".format(player.hand))
             #Stand
             if keyNum == pygame.K_2:
                 print("Stand")

@@ -17,6 +17,7 @@ cards = [
 
 class Deck:
     def __init__(self):
+        self.count = 0
         self._array = []
 
     def newDeck(self,n=1):
@@ -57,10 +58,21 @@ class Deck:
         draw's a single card
 
         '''
+        minus = {'A','J','K','Q'}
+        zero = {'7','8','9'}
+        plus = {'2','3','4','5','6'}
         if not self._array:
             raise RuntimeError("Attempt to draw an empty deck")
         val = self._array[-1] #get top card
         del self._array[-1]
+        cVal = val[1]
+        if cVal in minus:
+            self.count -= 1
+        elif cVal in zero:
+            self.count += 0
+        elif cVal in plus:
+            self.count +=1
+        print(self.count)
         return val
 
     def deckSize(self):
