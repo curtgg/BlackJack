@@ -24,53 +24,66 @@ class Deck:
     #shuffle be called afterwards for an unordered deck
     #the order is as shown above in the cards list
 
-    """
-    Add's n decks, 1 if no argument is given
-    these decks are ORDERED and should have
-    shuffle be called afterwards for an unordered deck
-    the order is as shown above in the cards list
 
-    Args:
-        n - Number of decks to add to total deck, each deck is 52 cards
-        default value is 1 if none specified
-    """
     def newDeck(self,n=1):
+        """
+        Add's n decks, 1 if no argument is given
+        these decks are ORDERED and should have
+        shuffle be called afterwards for an unordered deck
+        the order is as shown above in the cards list
+
+        Args:
+            n - Number of decks to add to total deck, each deck is 52 cards
+            default value is 1 if none specified
+        """
         while n > 0:
             for i in cards:
                 self._array.append(i)
             n -= 1
 
-    """
-    shuffle the elements of the deck
-    should always be called after adding newDeck
-    """
+
     def shuffle(self):
+        """
+        shuffle the elements of the deck
+        should always be called after adding newDeck
+
+        """
         shuffle(self._array)
 
     def add(self, val):
+        """
+        Add's a card to the deck, this functions purpose is for
+        initializing the deck, probably wont be used otherwise
+
+        """
         self._array.append((val))
-    '''
-    draw's a single card
-    '''
+
     def draw(self):
+        '''
+        draw's a single card
+
+        '''
         if not self._array:
             raise RuntimeError("Attempt to draw an empty deck")
         val = self._array[-1] #get top card
         del self._array[-1]
         return val
-    '''
-    returns Deck Size
-    '''
-    def deckSize(self):
-        return len(self._array)
-    '''
-    Burns n amount of cards, default 1 if no argument given
-    burnt card is not returned
 
-    Args:
-        n - number of cards to burn
-    '''
+    def deckSize(self):
+        '''
+        returns Deck Size
+
+        '''
+        return len(self._array)
+
     def burnCards(self,n=1):
+        '''
+        Burns n amount of cards, default 1 if no argument given
+        burnt card is not returned
+
+        Args:
+            n - number of cards to burn
+        '''
         for i in range(n):
             draw = self.draw()
 
@@ -86,4 +99,4 @@ def testDeck():
         pass
 
 #uncomment to run test cases
-#testDeck()
+testDeck()
