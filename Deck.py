@@ -19,11 +19,6 @@ class Deck:
     def __init__(self):
         self._array = []
 
-    #Add's n decks, 1 if no argument is given
-    #these decks are ORDERED and should have
-    #shuffle be called afterwards for an unordered deck
-    #the order is as shown above in the cards list
-
 
     def newDeck(self,n=1):
         """
@@ -99,4 +94,4 @@ def testDeck():
         pass
 
 #uncomment to run test cases
-testDeck()
+#testDeck()

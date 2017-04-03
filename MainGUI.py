@@ -1,4 +1,5 @@
 import sys, pygame
+
 size = width, height = 1200, 750 #very odd size
 pygame.init() #very important
 green = (4, 134, 21) #defines game board colour
