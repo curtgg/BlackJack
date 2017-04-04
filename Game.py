@@ -2,9 +2,6 @@ from Deck import Deck
 from Player import Player, Dealer
 import pygame
 
-#TODO:Confirm dealer properly handles ace when going over 21
-
-
 playCount = 1 #number of players
 botCount = 0 #number of bots
 deckNum = 1 #number of decks sepecified
@@ -45,7 +42,7 @@ def getDealerTurn(deck,dealer):
     print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
     while dealer.cardSum < 17:
         dealer.draw(deck)
-        print("Dealer Hand: {}".format(dealer.hand))
+        print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
     return (dealer.hand,dealer.cardSum)
 
 
@@ -124,7 +121,8 @@ def getPlayerTurn(player,deck):
                 return True
             #Split
             if keyNum == pygame.K_4:
-                if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]):
+                #code may break here
+                if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.split == False):
                     player.Split(deck)
                     print("Split")
                     doSplit(deck,player)

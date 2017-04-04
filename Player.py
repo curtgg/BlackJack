@@ -162,7 +162,7 @@ class Dealer:
                     self.cardSum += 10
             else:
                 self.cardSum += int(cVal)
-                if (self.cardSum > 21) and (self.ace == True):
-                    self.cardSum -= 10
-                    self.ace = False
+            if (self.cardSum > 21) and (self.ace == True):
+                self.cardSum -= 10
+                self.ace = False
             self.hand.append(card)
