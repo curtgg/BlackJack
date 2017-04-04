@@ -1,13 +1,17 @@
 from Deck import Deck
-from Player import Player
+from Player import Player, Dealer
 import pygame
 
-playCount = 2 #number of players
+#TODO:Confirm dealer properly handles ace when going over 21
+#TODO:Finish split handling and confirm flow in player class works
+#TODO:deal with when cards run out
+
+
+playCount = 1 #number of players
 botCount = 0 #number of bots
 deckNum = 1 #number of decks sepecified
 deckCount = 0 #deck count, for counting cards
 playList = []
-dealerHand = []
 pygame.init()
 size = width, height = 1200, 750 #very odd size
 screen = pygame.display.set_mode(size)
@@ -17,56 +21,34 @@ def getInput():
     for event in events:
         if event.type == pygame.KEYDOWN:
             return event.key
+        if event.type == pygame.QUIT: sys.exit()
 
-def getDealerTurn(deck):
+def getDealerTurn(deck,dealer):
     '''
     Computes the dealer hand.
     TODO: add more
     Args:
         deck - Deck object, pre initialized
     '''
-    def clearDealerHand():
-        '''
-        clears dealer hand, used after new game
-        '''
-        dealerHand = []
+    # if greater than or equal to 2, we know its hand from
+    #prev round
+    if dealer.done:
+        dealer.clearHand()
 
+    #only if <1, as in start of round
+    if len(dealer.hand) < 1:
+        dealer.draw(deck)
+        print("Dealer Hand: {}".format(dealer.hand))
+        return (dealer.hand,dealer.cardSum)
 
-    def getSum():
-        '''
-`       Gets sum of dealers hand
-        '''
-        letters = {'A','J','K','Q'}
-        cSum = 0
-        for i in range(len(dealerHand)):
-            cardval = dealerHand[i][1]
-            if cardval in letters:
-                if cardval == 'A':
-                    cSum += 11
-                else:
-                    cSum += 10
-            else:
-                cardval = int(cardval)
-                cSum += cardval
-        print("Dealer Sum: {}".format(cSum))
-        return cSum
-    #only if <2, as in start of round
-    if len(dealerHand) < 2:
-        dealerHand.append(deck.draw())
-        dealerHand.append(deck.draw())
-        print("Dealer Hand: {}".format(dealerHand))
-        return (dealerHand[0][0],getSum())
-    else:
-        #NOTE:wont hit on 17, may need to change dependent
-        #NOTE:on what we deside to do
-        if getSum() < 17:
-            dealerHand.append(deck.draw())
-        else:
-            #TODO: maybe do something if hes not hitting?
-            pass
-
-    #NOTE:Return dealers first card and sum
-    return (dealerHand[0][1],getSum())
+    #NOTE:wont hit on 17, may need to change dependent
+    #NOTE:on what we deside to do
+    #dealer.draw(deck)
+    print("Dealer Hand: {}".format(dealer.hand))
+    while dealer.cardSum < 17:
+        dealer.draw(deck)
+        print("Dealer Hand: {}".format(dealer.hand))
+    return (dealer.hand,dealer.cardSum)
 
 
 
@@ -77,42 +59,59 @@ def getPlayerTurn(player,deck):
         player - Player object
     '''
     turnOver = False
-    def getSum():
-        '''
-`       Gets sum of dealers hand
-        '''
-        letters = {'A','J','K','Q'}
-        cSum = 0
-        for i in range(len(player.hand)):
-            cardval = player.hand[i][1]
-            if cardval in letters:
-                if cardval == 'A':
-                    cSum += 11
-                else:
-                    cSum += 10
-            else:
-                cardval = int(cardval)
-                cSum += cardval
-        print("Player Sum: {}".format(cSum))
-        return cSum
-
-    def getBet():
-        while True:
-            pass
-
-    def getAction():
-        '''
-        Get user action, i.e Hit, split etc
-        '''
+    def doSplit(deck,player):
+        print("Make your move. hit-1, stand-2, double-3, split-4?")
+        #NOTE:Absolutely zero support for more than 1 splits
         while True:
             #TODO: MAKE GET INPUT FUNCTION
             keyNum = getInput()
             #Hit
             if keyNum == pygame.K_1:
                 player.Hit(deck)
-                if getSum() > 21:
-                    player.playerLoss()
-                    print(player.money)
+                if player.cardSum2 > 21:
+                    return True
+                print("Hit,Hand2: {}".format(player.hand2))
+            #Stand
+            if keyNum == pygame.K_2:
+                player.Stand()
+                return True
+                print("Stand")
+            #Double
+            if keyNum == pygame.K_3:
+                player.Double(deck)
+                print("Double")
+                return True
+
+    def getBet():
+        #no money to play
+        if player.money < 5:
+            return
+        else:
+            print("Whats your bet? Up: +5, Down: -5")
+            while True:
+                keyNum = getInput()
+                if keyNum == pygame.K_UP and (player.bet <= (player.money-5)):
+                    player.bet += 5
+                    print("Player Bet: {}".format(player.bet))
+                if keyNum == pygame.K_DOWN and (player.bet >= 10):
+                    player.bet -= 5
+                    print("Player Bet: {}".format(player.bet))
+                if keyNum == pygame.K_RETURN:
+                    return
+
+
+    def getAction():
+        '''
+        Get user action, i.e Hit, split etc
+        '''
+        print("Make your move. hit-1, stand-2, double-3, split-4?")
+        while True:
+            #TODO: MAKE GET INPUT FUNCTION
+            keyNum = getInput()
+            #Hit
+            if keyNum == pygame.K_1:
+                player.Hit(deck)
+                if player.cardSum > 21:
                     return True
                 print("Hit: {}".format(player.hand))
             #Stand
@@ -124,23 +123,27 @@ def getPlayerTurn(player,deck):
             if keyNum == pygame.K_3:
                 player.Double(deck)
                 print("Double")
+                return True
             #Split
             if keyNum == pygame.K_4:
-                player.Split(deck)
-                print("Split")
-            #For debug, exit
-            if keyNum == pygame.K_5:
-                sys.exit()
+                if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]):
+                    player.Split(deck)
+                    doSplit(deck,player)
+                    print("Split")
+                    return True
 
+
+    if player.money < 5:
+        print("Broke Nigga")
+        return
 
     if len(player.hand) < 2:
-        player.addCard(deck.draw())
-        player.addCard(deck.draw())
-        print("Player Hand: {}".format(player.hand))
-        getSum()
+        player.Hit(deck)
+        player.Hit(deck)
+        print("Player Hand: {}, Sum {}".format(player.hand,player.cardSum))
     while not turnOver:
         #TODO: compute bet
-        #getBet()
+        getBet()
         turnOver = getAction()
         if turnOver == True:
             break
@@ -152,23 +155,64 @@ def initDeck(deck):
 
 def initGame():
     #Add players
+    dealer = Dealer()
     for i in range(playCount):
         player = Player()
         playList.append(player)
 
     deck = Deck() #init deck
     deck = initDeck(deck)
-    return deck
+    return (deck,dealer)
 
-def startRound(deck):
+def startRound(deck,dealer):
     finished = False
-    result = getDealerTurn(deck)
+    result = getDealerTurn(deck,dealer)
     #print("Dealer First card and Sum: {}".format(result))
     for i in range(playCount):
         player = playList[i]
         getPlayerTurn(player,deck)
         print("Player {} Hand: {}".format(i,player.hand))
 
+    result = getDealerTurn(deck,dealer)
+    dSum = result[1]
+    while dSum < 17:
+        #case where dealer draws an Ace, goes over limit
+        #but the script used doesnt check and will return a number under 17
+        result = getDealerTurn(deck,dealer)
+    #NOTE: dealer wins on 21, may need to change
+    dealer.done = True
+    if dSum == 21:
+        print("Dealer Sum: {}".format(dSum))
+        for i in range(playCount):
+            player = playList[i]
+            if player.broke:
+                continue
 
-deck = initGame()
-startRound(deck)
+            print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
+            player.playerLoss()
+            player.clearHand()
+    elif dSum > 21:
+        for i in range(playCount):
+            player = playList[i]
+            if player.broke:
+                continue
+            print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
+            if player.cardSum <= 21:
+                player.playerWin()
+            if player.cardSum > 21:
+                player.playerLoss()
+    elif dSum < 21:
+        for i in range(playCount):
+            player = playList[i]
+            if player.broke:
+                continue
+            print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
+            if player.cardSum > dSum and (player.cardSum <= 21):
+                player.playerWin()
+            elif player.cardSum <= dSum or (player.cardSum > 21):
+                player.playerLoss()
+    return
+
+(deck,dealer) = initGame()
+while True:
+    startRound(deck,dealer)

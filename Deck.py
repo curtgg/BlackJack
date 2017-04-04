@@ -31,6 +31,7 @@ class Deck:
             n - Number of decks to add to total deck, each deck is 52 cards
             default value is 1 if none specified
         """
+        self.count = 0
         while n > 0:
             for i in cards:
                 self._array.append(i)
@@ -72,7 +73,7 @@ class Deck:
             self.count += 0
         elif cVal in plus:
             self.count +=1
-        print(self.count)
+        #print(self.count)
         return val
 
     def deckSize(self):
