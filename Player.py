@@ -32,4 +32,5 @@ class Player:
         pass
 
     def playerLoss(self):
-        pass    
+        self.money -= self.bet
+        pass

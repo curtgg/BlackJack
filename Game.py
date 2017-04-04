@@ -110,15 +110,23 @@ def getPlayerTurn(player,deck):
             #Hit
             if keyNum == pygame.K_1:
                 player.Hit(deck)
+                if getSum() > 21:
+                    player.playerLoss()
+                    print(player.money)
+                    return True
                 print("Hit: {}".format(player.hand))
             #Stand
             if keyNum == pygame.K_2:
+                player.Stand()
+                return True
                 print("Stand")
             #Double
             if keyNum == pygame.K_3:
+                player.Double(deck)
                 print("Double")
             #Split
             if keyNum == pygame.K_4:
+                player.Split(deck)
                 print("Split")
             #For debug, exit
             if keyNum == pygame.K_5:
@@ -130,10 +138,10 @@ def getPlayerTurn(player,deck):
         player.addCard(deck.draw())
         print("Player Hand: {}".format(player.hand))
         getSum()
-    while True:
+    while not turnOver:
         #TODO: compute bet
         #getBet()
-        getAction()
+        turnOver = getAction()
         if turnOver == True:
             break
 
@@ -142,24 +150,25 @@ def initDeck(deck):
     deck.shuffle()
     return deck
 
-def startGame():
+def initGame():
     #Add players
-    #print(deck._array)
     for i in range(playCount):
         player = Player()
         playList.append(player)
 
     deck = Deck() #init deck
     deck = initDeck(deck)
+    return deck
 
-    #print(playList)
-    while True:
-        result = getDealerTurn(deck)
-        #print("Dealer First card and Sum: {}".format(result))
-        for i in range(playCount):
-            player = playList[i]
-            getPlayerTurn(player,deck)
+def startRound(deck):
+    finished = False
+    result = getDealerTurn(deck)
+    #print("Dealer First card and Sum: {}".format(result))
+    for i in range(playCount):
+        player = playList[i]
+        getPlayerTurn(player,deck)
+        print("Player {} Hand: {}".format(i,player.hand))
 
 
-
-startGame()
+deck = initGame()
+startRound(deck)
