@@ -103,6 +103,7 @@ class Player:
         else:
             self.bet *= 2
 
+    #TODO:check that player cant split if money isnt suffiecient
     def Split(self,deck):
         if (len(self.hand) == 2) and (self.hand[0][1] == self.hand[1][1]):
             self.split = True
@@ -113,21 +114,25 @@ class Player:
             self.hand2 = []
             self.hand2.append(card)
 
-        #TODO: this will be complex
-        #plan is to create a second hand for the player
-        #treat it as its own entity
-        pass
 
     def playerWin(self):
-        self.money += (self.bet + self.bet2)
-        self.clearHand()
+        if self.split:
+            self.money += self.bet2
+            self.split = False
+        else:
+            self.money += (self.bet)
+            self.clearHand()
         print("Win, Player Money: {}".format(self.money))
 
     def playerLoss(self):
-        self.money -= (self.bet + self.bet2)
+        if self.split:
+            self.money -= self.bet2
+            self.split = False
+        else:
+            self.money -= (self.bet)
+            self.clearHand() #only want to clear hand if split dealt with
         if self.money <= 0:
             self.broke = True
-        self.clearHand()
         print("Loss, Player Money: {}".format(self.money))
 
 

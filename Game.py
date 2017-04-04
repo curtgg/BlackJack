@@ -3,8 +3,6 @@ from Player import Player, Dealer
 import pygame
 
 #TODO:Confirm dealer properly handles ace when going over 21
-#TODO:Finish split handling and confirm flow in player class works
-#TODO:deal with when cards run out
 
 
 playCount = 1 #number of players
@@ -44,7 +42,7 @@ def getDealerTurn(deck,dealer):
     #NOTE:wont hit on 17, may need to change dependent
     #NOTE:on what we deside to do
     #dealer.draw(deck)
-    print("Dealer Hand: {}".format(dealer.hand))
+    print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
     while dealer.cardSum < 17:
         dealer.draw(deck)
         print("Dealer Hand: {}".format(dealer.hand))
@@ -60,7 +58,7 @@ def getPlayerTurn(player,deck):
     '''
     turnOver = False
     def doSplit(deck,player):
-        print("Make your move. hit-1, stand-2, double-3, split-4?")
+        print("Make your move for hand 2, hit-1, stand-2, double-3, split-4?")
         #NOTE:Absolutely zero support for more than 1 splits
         while True:
             #TODO: MAKE GET INPUT FUNCTION
@@ -128,13 +126,13 @@ def getPlayerTurn(player,deck):
             if keyNum == pygame.K_4:
                 if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]):
                     player.Split(deck)
-                    doSplit(deck,player)
                     print("Split")
-                    return True
+                    doSplit(deck,player)
+                    continue
 
 
     if player.money < 5:
-        print("Broke Nigga")
+        print("Broke")
         return
 
     if len(player.hand) < 2:
@@ -187,7 +185,8 @@ def startRound(deck,dealer):
             player = playList[i]
             if player.broke:
                 continue
-
+            if player.split:
+                player.playerLoss()
             print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
             player.playerLoss()
             player.clearHand()
@@ -196,6 +195,11 @@ def startRound(deck,dealer):
             player = playList[i]
             if player.broke:
                 continue
+            if player.split:
+                if player.cardSum2 <= 21:
+                    player.playerWin()
+                else:
+                    player.playerLoss()
             print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
             if player.cardSum <= 21:
                 player.playerWin()
@@ -206,6 +210,11 @@ def startRound(deck,dealer):
             player = playList[i]
             if player.broke:
                 continue
+            if player.split:
+                if (player.cardSum2 > dSum) and (player.cardSum2 <= 21):
+                    player.playerWin()
+                else:
+                    player.playerLoss()
             print("Player {} Hand and Sum: {}, {}".format(i,player.cardSum,player.hand))
             if player.cardSum > dSum and (player.cardSum <= 21):
                 player.playerWin()
