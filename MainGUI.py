@@ -1,4 +1,5 @@
 import sys, pygame
+from time import sleep
 
 size = width, height = 1200, 750 #very odd size
 pygame.init() #very important
@@ -12,6 +13,7 @@ title = "Blackjack" #title at top of window
 pygame.display.set_caption(title, "Blackjack") #displays title top of window
 Tfont = pygame.font.Font(None, 100) #get text font
 Mfont = pygame.font.Font(None, 60) #get text font
+diamond = pygame.image.load("diamond.png")
 
 gameName = Tfont.render("BLACKJACK",0, black) #titlescreen string
 start = Mfont.render("Start",0, black)#start string
@@ -27,6 +29,7 @@ split = Mfont.render("Split",0, black)#split string
 titleScreen = True #starts as true because it starts here
 startScreen = False
 optionsScreen = False
+initialDraw = False
 
 while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
     for event in pygame.event.get():
@@ -57,20 +60,28 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
         if click and (cursX >= 460 and cursX <= 570) and (cursY >=360 and cursY <=390):
             titleScreen = False
             startScreen = True
+            initalDraw = True
             print("start game")
 
     #Start screen functionality, maybe we can change this to "gamescreen" later?
     if startScreen:
-        screen.fill(green)
-        pygame.draw.ellipse(screen, tableRed, [100, -500, 1000, 1000])#drawing of table
-        pygame.draw.ellipse(screen, green, [375, -300, 450, 450])#can adjust this later, it's somewhat off
-        pygame.draw.rect(screen, green, [0, 0, 1200, 50])
-        #drawing buttons
-        screen.blit(back,(1075,10))
-        screen.blit(double,(260,625))
-        screen.blit(hit,(485,625))
-        screen.blit(stand,(635,625))
-        screen.blit(split,(835,625))
+        #We only want to draw these things the first time we load the startScreen
+        if initalDraw:
+            cardx = 580
+            cardy = 380
+            dx = 40
+            dy = 60
+            screen.fill(green)
+            pygame.draw.ellipse(screen, tableRed, [100, -500, 1000, 1000])#drawing of table
+            pygame.draw.ellipse(screen, green, [375, -300, 450, 450])#can adjust this later, it's somewhat off
+            pygame.draw.rect(screen, green, [0, 0, 1200, 50])
+            #drawing buttons
+            screen.blit(back,(1075,10))
+            screen.blit(double,(260,625))
+            screen.blit(hit,(485,625))
+            screen.blit(stand,(635,625))
+            screen.blit(split,(835,625))
+            initalDraw = False
         #Back to title screen button
         if click and (cursX >= 1075 and cursX <= 1200) and (cursY >=0 and cursY <=50):
             titleScreen = True
@@ -78,8 +89,11 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
             print("go to title")
         #Hit button
         if click and (cursX >= 475 and cursX <= 570) and (cursY >=615 and cursY <=665):
-            #TODO: pop off stack, deal card
+            pygame.draw.rect(screen, white, [cardx, cardy, dx, dy])
+            screen.blit(diamond,(cardx,cardy+dy-10))
+            screen.blit(diamond,(cardx+dx-8,cardy))
+            cardy -= dy
             print("hit") #prints a million times, maybe need to implement delay so we dont deal a fuck ton of cards?
-            pass
+            sleep(0.1)
 
     pygame.display.flip() ##update display **very important**

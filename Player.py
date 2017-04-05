@@ -5,6 +5,7 @@ class Player:
         self.money = 500
         self.bet = 5
         self.split = False
+        self.splitV = False
         self.cardSum = 0
         self.cardSum2 = 0
         self.broke = False
@@ -19,6 +20,7 @@ class Player:
             del self.hand2
         self.bet = 5
         self.split = False
+        self.splitV = False
         self.cardSum = 0
         self.cardSum2 = 0
         self.ace = False
@@ -62,7 +64,10 @@ class Player:
             self.hand.append(card)
 
     def Stand(self):
-        pass
+        if self.split:
+            self.split = False
+            self.splitV = True
+
 
     def Double(self,deck):
         letters = {'A','J','K','Q'}
@@ -111,23 +116,31 @@ class Player:
             self.bet2 = self.bet
             card = self.hand[-1]
             del self.hand[-1]
+            self.cardSum2 += (self.cardSum/2)
+            self.cardSum -= (self.cardSum/2)
             self.hand2 = []
             self.hand2.append(card)
 
 
     def playerWin(self):
-        if self.split:
+        if self.splitV:
             self.money += self.bet2
             self.split = False
+            self.splitV = False
         else:
             self.money += (self.bet)
             self.clearHand()
         print("Win, Player Money: {}".format(self.money))
 
     def playerLoss(self):
-        if self.split:
+        """
+        PLAYER SPLIT HAND DOES FIRST ALWAYS
+
+        """
+        if self.splitV:
             self.money -= self.bet2
             self.split = False
+            self.splitV = False
         else:
             self.money -= (self.bet)
             self.clearHand() #only want to clear hand if split dealt with
