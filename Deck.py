@@ -1,4 +1,5 @@
 from random import shuffle
+from math import floor
 #unshuffled deck of cards, Tuple is (Type(H,D,S,C),Value)
 #used to initialize deck
 cards = [
@@ -19,6 +20,7 @@ class Deck:
     def __init__(self):
         self.count = 0
         self._array = []
+        self.deckN = 0
 
     def newDeck(self,n=1):
         """
@@ -32,6 +34,7 @@ class Deck:
             default value is 1 if none specified
         """
         self.count = 0
+        self.deckN = n
         while n > 0:
             for i in cards:
                 self._array.append(i)
@@ -73,7 +76,6 @@ class Deck:
             self.count += 0
         elif cVal in plus:
             self.count +=1
-        #print(self.count)
         return val
 
     def deckSize(self):
@@ -93,7 +95,13 @@ class Deck:
         '''
         for i in range(n):
             draw = self.draw()
+    def getCount(self):
+        '''
+        returns deck count, divided by number of decks
 
+        '''
+        #Round down ***
+        return (floor(self.count/self.deckN))
 def testDeck():
     deck = Deck()
     deck.newDeck(3)

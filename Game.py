@@ -2,8 +2,8 @@ from Deck import Deck
 from Player import Player, Dealer
 import pygame
 
-playCount = 1 #number of players
-botCount = 0 #number of bots
+playCount = 0 #number of players
+botCount = 1 #number of bots
 deckNum = 3 #number of decks sepecified
 playList = []
 pygame.init()
@@ -46,7 +46,7 @@ def getDealerTurn(deck,dealer):
 
 
 
-def getPlayerTurn(player,deck):
+def getPlayerTurn(player,deck,dealer):
     '''
     Gets the players turn
     Args:
@@ -81,52 +81,58 @@ def getPlayerTurn(player,deck):
         if player.money < 5:
             return
         else:
-            print("Whats your bet? Up: +5, Down: -5")
-            while True:
-                keyNum = getInput()
-                if keyNum == pygame.K_UP and (player.bet <= (player.money-5)):
-                    player.bet += 5
-                    print("Player Bet: {}".format(player.bet))
-                if keyNum == pygame.K_DOWN and (player.bet >= 10):
-                    player.bet -= 5
-                    print("Player Bet: {}".format(player.bet))
-                if keyNum == pygame.K_RETURN:
-                    return
-
-
+            if not player.bot:
+                print("Whats your bet? Up: +5, Down: -5")
+                while True:
+                    keyNum = getInput()
+                    if keyNum == pygame.K_UP and (player.bet <= (player.money-5)):
+                        player.bet += 5
+                        print("Player Bet: {}".format(player.bet))
+                    if keyNum == pygame.K_DOWN and (player.bet >= 10):
+                        player.bet -= 5
+                        print("Player Bet: {}".format(player.bet))
+                    if keyNum == pygame.K_RETURN:
+                        return
+            else:
+                #NOTE: IF bot compute the bet
+                player.computeBet(deck)
+                print("Player Bet:{} and count: {}".format(player.bet,deck.count))
     def getAction():
         '''
         Get user action, i.e Hit, split etc
         '''
         print("Make your move. hit-1, stand-2, double-3, split-4?")
         print("phand: {}".format(player.hand))
-        while True:
-            #TODO: MAKE GET INPUT FUNCTION
-            keyNum = getInput()
-            #Hit
-            if keyNum == pygame.K_1:
-                player.Hit(deck)
-                if player.cardSum > 21:
+        if not player.bot:
+            while True:
+                #TODO: MAKE GET INPUT FUNCTION
+                keyNum = getInput()
+                #Hit
+                if keyNum == pygame.K_1:
+                    player.Hit(deck)
+                    if player.cardSum > 21:
+                        return True
+                    print("phand: {}".format(player.hand))
+                    print("Hit: {}".format(player.hand))
+                #Stand
+                if keyNum == pygame.K_2:
+                    player.Stand()
                     return True
-                print("phand: {}".format(player.hand))
-                print("Hit: {}".format(player.hand))
-            #Stand
-            if keyNum == pygame.K_2:
-                player.Stand()
-                return True
-                print("Stand")
-            #Double
-            if keyNum == pygame.K_3:
-                player.Double(deck)
-                print("Double")
-                return True
-            #Split
-            if keyNum == pygame.K_4:
-                #code may break here
-                if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
-                    player.Split(deck)
-                    print("Split")
-                    doSplit(deck,player)
+                    print("Stand")
+                #Double
+                if keyNum == pygame.K_3:
+                    player.Double(deck)
+                    print("Double")
+                    return True
+                #Split
+                if keyNum == pygame.K_4:
+                    #code may break here
+                    if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
+                        player.Split(deck)
+                        print("Split")
+                        doSplit(deck,player)
+        else:
+            player.computeTurn(deck,dealer.hand)
 
 
 
@@ -138,12 +144,8 @@ def getPlayerTurn(player,deck):
         player.Hit(deck)
         player.Hit(deck)
         print("Player Hand: {}, Sum {}".format(player.hand,player.cardSum))
-    while not turnOver:
-        #TODO: compute bet
-        getBet()
-        turnOver = getAction()
-        if turnOver == True:
-            break
+    getBet()
+    turnOver = getAction()
 
 def initDeck(deck):
     deck.newDeck(deckNum)
@@ -156,7 +158,9 @@ def initGame():
     for i in range(playCount):
         player = Player()
         playList.append(player)
-
+    for i in range(botCount):
+        bot = Player(True)
+        playList.append(bot)
     deck = Deck() #init deck
     deck = initDeck(deck)
     return (deck,dealer)
@@ -164,9 +168,9 @@ def initGame():
 def startRound(deck,dealer):
     result = getDealerTurn(deck,dealer)
     #print("Dealer First card and Sum: {}".format(result))
-    for i in range(playCount):
+    for i in range(len(playList)):
         player = playList[i]
-        getPlayerTurn(player,deck)
+        getPlayerTurn(player,deck,dealer)
         print("Player {} Hand: {}".format(i,player.hand))
 
     result = getDealerTurn(deck,dealer)
@@ -179,7 +183,7 @@ def startRound(deck,dealer):
     dealer.done = True
     if dSum == 21:
         print("Dealer Sum: {}".format(dSum))
-        for i in range(playCount):
+        for i in range(len(playList)):
             player = playList[i]
             if player.broke:
                 continue
@@ -189,7 +193,7 @@ def startRound(deck,dealer):
             player.playerLoss()
             player.clearHand()
     elif dSum > 21:
-        for i in range(playCount):
+        for i in range(len(playList)):
             player = playList[i]
             if player.broke:
                 continue
@@ -204,7 +208,7 @@ def startRound(deck,dealer):
             if player.cardSum > 21:
                 player.playerLoss()
     elif dSum < 21:
-        for i in range(playCount):
+        for i in range(len(playList)):
             player = playList[i]
             if player.broke:
                 continue
