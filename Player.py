@@ -199,12 +199,39 @@ class Player:
         -handle aces
         more
         '''
-        dVal = hand[0][1]
-        if self.cardSum >=17:
-            print("S") #STAND
+        letters = {'J','K','Q'}
+        #maybe splitV
+        if self.split:
+            cSum = int(self.cardSum2)
+            ace = self.ace
         else:
-            turn = table[(self.cardSum,dVal)]
-            print("Computed turn:{}".format(turn))
+            cSum = int(self.cardSum)
+            ace = self.ace2
+        dVal = hand[0][1]
+        if not self.splitV:
+            if (self.hand[0][1] == self.hand[1][1]):
+                if self.hand[0][1] in letters:
+                    pass
+                else:
+                    #if split is possible
+                    turn = table[(self.hand[0][1],dVal)]
+                    return turn
+
+        if cSum >=17 and not ace:
+            turn = 'S'
+            return turn
+            #maybe splitV
+        if ace:
+            #if soft hand
+            if cSum > 20:
+                turn = 'S'
+            else:
+                turn = table[((cSum,'S'),dVal)]
+            print("Soft: {}".format(turn))
+            return turn
+        else:
+            turn = table[(cSum,dVal)]
+            return turn
 
 
 class Dealer:
@@ -257,7 +284,7 @@ table = {
 (13,'2'):'S',(13,'3'):'S',(13,'4'):'S',(13,'5'):'S',(13,'6'):'S',(13,'7'):'H',(13,'8'):'H',
 (13,'9'):'H',(13,'10'):'H',(13,'J'):'H',(13,'K'):'H',(13,'Q'):'H',(13,'A'):'H',
 
-(12,'2'):'H',(12,'H'):'S',(12,'4'):'S',(12,'5'):'S',(12,'6'):'S',(12,'7'):'H',(12,'8'):'H',
+(12,'2'):'H',(12,'3'):'S',(12,'4'):'S',(12,'5'):'S',(12,'6'):'S',(12,'7'):'H',(12,'8'):'H',
 (12,'9'):'H',(12,'10'):'H',(12,'J'):'H',(12,'K'):'H',(12,'Q'):'H',(12,'A'):'H',
 
 (11,'2'):'D',(11,'3'):'D',(11,'4'):'D',(11,'5'):'D',(11,'6'):'D',(11,'7'):'D',(11,'8'):'D',

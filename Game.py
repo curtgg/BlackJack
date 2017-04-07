@@ -56,25 +56,50 @@ def getPlayerTurn(player,deck,dealer):
     def doSplit(deck,player):
         print("Make your move for hand 2, hit-1, stand-2, double-3, split-4?")
         #NOTE:Absolutely zero support for more than 1 splits
-        while True:
-            #TODO: MAKE GET INPUT FUNCTION
-            keyNum = getInput()
-            #Hit
-            if keyNum == pygame.K_1:
-                player.Hit(deck)
-                if player.cardSum2 > 21:
+        if player.bot:
+            player.Hit(deck)
+            while True:
+                turn = player.computeTurn(deck,dealer.hand)
+                #Hit
+                if turn == 'H' or turn == 'X':
+                    #force hit on a split, only 1 split allowed
+                    player.Hit(deck)
+                    if player.cardSum2 > 21:
+                        player.split = False
+                        return True
+                    print("Hit,Hand2: {} and sum: {}".format(player.hand2,player.cardSum2))
+                #Stand
+                elif turn == 'S':
+                    player.Stand()
                     return True
-                print("Hit,Hand2: {} and sum: {}".format(player.hand2,player.cardSum2))
-            #Stand
-            if keyNum == pygame.K_2:
-                player.Stand()
-                return True
-                print("Stand")
-            #Double
-            if keyNum == pygame.K_3:
-                player.Double(deck)
-                print("Double")
-                return True
+                    print("Stand")
+                #Double
+                elif turn == 'D':
+                    player.Double(deck)
+                    player.split = False
+                    print("Double")
+                    return True
+        else:
+            while True:
+                keyNum = getInput()
+                #Hit
+                if keyNum == pygame.K_1:
+                    player.Hit(deck)
+                    if player.cardSum2 > 21:
+                        player.split = False
+                        return True
+                    print("Hit,Hand2: {} and sum: {}".format(player.hand2,player.cardSum2))
+                #Stand
+                if keyNum == pygame.K_2:
+                    player.Stand()
+                    return True
+                    print("Stand")
+                #Double
+                if keyNum == pygame.K_3:
+                    player.Double(deck)
+                    player.split = False
+                    print("Double")
+                    return True
 
     def getBet():
         #no money to play
@@ -112,7 +137,6 @@ def getPlayerTurn(player,deck,dealer):
                     player.Hit(deck)
                     if player.cardSum > 21:
                         return True
-                    print("phand: {}".format(player.hand))
                     print("Hit: {}".format(player.hand))
                 #Stand
                 if keyNum == pygame.K_2:
@@ -132,7 +156,34 @@ def getPlayerTurn(player,deck,dealer):
                         print("Split")
                         doSplit(deck,player)
         else:
-            player.computeTurn(deck,dealer.hand)
+            while True:
+                result = player.computeTurn(deck,dealer.hand)
+                if result == 'H':
+                    player.Hit(deck)
+                    print("Hit: {}".format(player.hand))
+                    if player.cardSum > 21:
+                        return True
+                elif result == 'S':
+                    print("Stand: {}".format(player.cardSum))
+                    player.Stand()
+                    return True
+                elif result == 'D':
+                    player.Double(deck)
+                    print("Double: {}".format(player.hand))
+                    return True
+                elif result == 'X':
+                    print('MAJOR KEY ALERT')
+                    if player.splitV == True:
+                        #force hit if already split
+                        player.Hit(deck)
+                        if player.cardSum > 21:
+                            return True
+                    elif (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
+                        player.Split(deck)
+                        print("Split")
+                        doSplit(deck,player)
+                        player.Hit(deck)
+
 
 
 
