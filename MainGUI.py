@@ -1,5 +1,6 @@
 import sys, pygame
 from time import sleep
+from Cardpile import cardPile
 
 size = width, height = 1200, 750 #very odd size
 pygame.init() #very important
@@ -13,7 +14,15 @@ title = "Blackjack" #title at top of window
 pygame.display.set_caption(title, "Blackjack") #displays title top of window
 Tfont = pygame.font.Font(None, 100) #get text font
 Mfont = pygame.font.Font(None, 60) #get text font
+
+cardWidth = 40
+cardHeight = 60
+cardPiles = []
+cardSpots = 6
 diamond = pygame.image.load("diamond.png")
+club = pygame.image.load("club.png")
+heart = pygame.image.load("heart.png")
+spade = pygame.image.load("spade.png")
 
 gameName = Tfont.render("BLACKJACK",0, black) #titlescreen string
 start = Mfont.render("Start",0, black)#start string
@@ -25,12 +34,17 @@ stand = Mfont.render("Stand",0, black)#stand string
 double = Mfont.render("Double",0, black)#double string
 split = Mfont.render("Split",0, black)#split string
 
+Vfont = pygame.font.Font(None, 12)
+value = "K"
+colour = red
+valueFont = Vfont.render(value, 0, colour)
+
 ###setting up booleans for different states of the game
 titleScreen = True #starts as true because it starts here
 startScreen = False
 optionsScreen = False
 initialDraw = False
-
+c = cardPile(0)
 while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
     for event in pygame.event.get():
         curs_pos = pygame.mouse.get_pos()
@@ -68,7 +82,7 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
         #We only want to draw these things the first time we load the startScreen
         if initalDraw:
             cardx = 580
-            cardy = 380
+            cardy = 420
             dx = 40
             dy = 60
             screen.fill(green)
@@ -89,10 +103,26 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
             print("go to title")
         #Hit button
         if click and (cursX >= 475 and cursX <= 570) and (cursY >=615 and cursY <=665):
-            pygame.draw.rect(screen, white, [cardx, cardy, dx, dy])
-            screen.blit(diamond,(cardx,cardy+dy-10))
-            screen.blit(diamond,(cardx+dx-8,cardy))
-            cardy -= dy
+            #pygame.draw.rect(screen, white, [180, 170, dx, dy]) #p4
+            #pygame.draw.rect(screen, white, [380, 350, dx, dy]) #p2
+
+            #pygame.draw.rect(screen, white, [580, 420, dx, dy]) #p1 and drawing upwards
+            #pygame.draw.rect(screen, white, [580, cardy, dx, dy])
+
+            #pygame.draw.rect(screen, white, [780, 350, dx, dy]) #p3
+            #pygame.draw.rect(screen, white, [980, 170, dx, dy]) #p5
+            #pygame.draw.rect(screen, white, [580, 160, dx, dy]) #p0 aka the dealer
+
+            #screen.blit(diamond, (cardx,cardy+dy-8))
+            #screen.blit(diamond, (cardx+dx-8,cardy))
+            #screen.blit(valueFont, (cardx+8,cardy+dy-8))
+            #screen.blit(valueFont, (cardx+dx-8-8,cardy))
+
+            cardy -= dy - 8
+
+            # for i in range(cardSpots):
+            c.drawCard(0,'C','K',screen)
+
             print("hit") #prints a million times, maybe need to implement delay so we dont deal a fuck ton of cards?
             sleep(0.1)
 
