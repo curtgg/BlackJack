@@ -4,7 +4,7 @@ from random import randrange
 class Player:
     def __init__(self,bot=False):
         self.hand = []
-        self.money = 500
+        self.money = 50000 #NOTE:change this
         self.bet = 5
         self.split = False
         self.splitV = False
@@ -216,7 +216,12 @@ class Player:
                     #if split is possible
                     turn = table[(self.hand[0][1],dVal)]
                     return turn
-
+        if cSum < 5:
+            turn = 'H'
+            return turn
+        if cSum <= 12 and ace:
+            turn = 'H'
+            return turn
         if cSum >=17 and not ace:
             turn = 'S'
             return turn

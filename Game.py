@@ -4,11 +4,8 @@ import pygame
 
 playCount = 0 #number of players
 botCount = 1 #number of bots
-deckNum = 3 #number of decks sepecified
+deckNum = 150 #number of decks sepecified
 playList = []
-pygame.init()
-size = width, height = 1200, 750 #very odd size
-screen = pygame.display.set_mode(size)
 
 def getInput():
     events = pygame.event.get()
@@ -274,7 +271,7 @@ def startRound(deck,dealer):
             elif player.cardSum <= dSum or (player.cardSum > 21):
                 player.playerLoss()
     return
-
-(deck,dealer) = initGame()
-while True:
-    startRound(deck,dealer)
+#
+#(deck,dealer) = initGame()
+#while True:
+#    startRound(deck,dealer)
