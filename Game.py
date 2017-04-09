@@ -1,18 +1,22 @@
 from Deck import Deck
 from Player import Player, Dealer
 import pygame
+import time
 
-playCount = 0 #number of players
-botCount = 1 #number of bots
+playCount = 1 #number of players
+botCount = 0 #number of bots
 deckNum = 150 #number of decks sepecified
 playList = []
 
 def getInput():
     events = pygame.event.get()
+    curs_pos = pygame.mouse.get_pos()
+    (cursX, cursY) = (curs_pos)
+    (clickL,mid,clickR) = pygame.mouse.get_pressed() #get left click
     for event in events:
-        if event.type == pygame.KEYDOWN:
-            return event.key
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT: sys.exit() #exits game
+    #Returns mouse XY and if click
+    return (cursX,cursY,clickL,clickR)
 
 def getDealerTurn(deck,dealer):
     '''
@@ -34,7 +38,6 @@ def getDealerTurn(deck,dealer):
 
     #NOTE:wont hit on 17, may need to change dependent
     #NOTE:on what we deside to do
-    #dealer.draw(deck)
     print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
     while dealer.cardSum < 17 or (dealer.cardSum == 17 and dealer.ace):
         dealer.draw(deck)
@@ -56,6 +59,7 @@ def getPlayerTurn(player,deck,dealer):
         if player.bot:
             player.Hit(deck)
             while True:
+                time.sleep(1)
                 turn = player.computeTurn(deck,dealer.hand)
                 #Hit
                 if turn == 'H' or turn == 'X':
@@ -63,39 +67,44 @@ def getPlayerTurn(player,deck,dealer):
                     player.Hit(deck)
                     if player.cardSum2 > 21:
                         player.split = False
-                        return True
+                        return False
                     print("Hit,Hand2: {} and sum: {}".format(player.hand2,player.cardSum2))
                 #Stand
                 elif turn == 'S':
                     player.Stand()
-                    return True
+                    return False
                     print("Stand")
                 #Double
                 elif turn == 'D':
                     player.Double(deck)
                     player.split = False
                     print("Double")
-                    return True
+                    return False
         else:
             while True:
-                keyNum = getInput()
+                (cursX,cursY,clickL,clickR) = getInput()
                 #Hit
-                if keyNum == pygame.K_1:
+                if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
+                    time.sleep(0.5)
                     if player.cardSum2 > 21:
                         player.split = False
-                        return True
+                        return False
                     print("Hit,Hand2: {} and sum: {}".format(player.hand2,player.cardSum2))
                 #Stand
-                if keyNum == pygame.K_2:
+                elif clickL and (cursX >= 637 and cursX <= 750) and (cursY >= 630 and cursY <= 657):
                     player.Stand()
-                    return True
+                    time.sleep(0.5)
+                    return False
                     print("Stand")
                 #Double
-                if keyNum == pygame.K_3:
+                elif clickL and (cursX >= 265 and cursX <= 400) and (cursY >= 630 and cursY <= 657):
                     player.Double(deck)
                     player.split = False
+                    time.sleep(0.5)
                     print("Double")
+                    return False
+                elif clickL and (cursX >= 1075 and cursX <= 1200) and (cursY >=0 and cursY <=50):
                     return True
 
     def getBet():
@@ -106,17 +115,43 @@ def getPlayerTurn(player,deck,dealer):
             if not player.bot:
                 print("Whats your bet? Up: +5, Down: -5")
                 while True:
-                    keyNum = getInput()
-                    if keyNum == pygame.K_UP and (player.bet <= (player.money-5)):
-                        player.bet += 5
+                    (cursX,cursY,clickL,clickR) = getInput()
+                    #TODO: sometimes if you hold mouse or something this goes crazy
+                    #otherwise this works fine
+                    if (clickL or clickR) and (cursX >= 1005 and cursX <= 1065) and (cursY >=495 and cursY <=555):
+                        if clickL and ((player.money-player.bet) >= 10):
+                            player.bet += 10
+                            time.sleep(0.5)
+                        elif clickR and ((player.bet) > 10):
+                            player.bet -= 10
+                            time.sleep(0.5)
                         print("Player Bet: {}".format(player.bet))
-                    if keyNum == pygame.K_DOWN and (player.bet >= 10):
-                        player.bet -= 5
+                    #five chip
+                    elif (clickL or clickR) and (cursX >= 1080 and cursX <= 1140) and (cursY >=495 and cursY <=555):
+                        if clickL and ((player.money-player.bet) >= 5):
+                            player.bet += 5
+                            time.sleep(0.5)
+                        elif clickR and ((player.bet) > 5):
+                            player.bet -= 5
+                            time.sleep(0.5)
                         print("Player Bet: {}".format(player.bet))
-                    if keyNum == pygame.K_RETURN:
-                        return
+                    #one chip
+                    elif (clickL or clickR) and (cursX >= 1042 and cursX <= 1102) and (cursY >=555 and cursY <=615):
+                        if clickL and ((player.money-player.bet) >= 1):
+                            player.bet += 1
+                            time.sleep(0.5)
+                        elif clickR and ((player.bet) > 1):
+                            player.bet -= 1
+                            time.sleep(0.5)
+                        print("Player Bet: {}".format(player.bet))
+                    #Back to main menu
+                    if clickL and (cursX >= 1075 and cursX <= 1200) and (cursY >=0 and cursY <=50):
+                        return True
+                    elif clickL and (cursX >= 1038 and cursX <= 1102) and (cursY >= 461 and cursY <=486):
+                        return False
             else:
                 #NOTE: IF bot compute the bet
+                time.sleep(1)
                 player.computeBet(deck)
                 print("Player Bet:{} and count: {}".format(player.bet,deck.count))
     def getAction():
@@ -128,30 +163,44 @@ def getPlayerTurn(player,deck,dealer):
         if not player.bot:
             while True:
                 #TODO: MAKE GET INPUT FUNCTION
-                keyNum = getInput()
+                (cursX,cursY,clickL,clickR) = getInput()
                 #Hit
-                if keyNum == pygame.K_1:
+                if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
+                    time.sleep(0.5)
                     if player.cardSum > 21:
-                        return True
+                        return False
                     print("Hit: {}".format(player.hand))
                 #Stand
-                if keyNum == pygame.K_2:
+                elif clickL and (cursX >= 637 and cursX <= 750) and (cursY >= 630 and cursY <= 657):
                     player.Stand()
-                    return True
                     print("Stand")
+                    time.sleep(0.5)
+                    return False
                 #Double
-                if keyNum == pygame.K_3:
+                elif clickL and (cursX >= 265 and cursX <= 400) and (cursY >= 630 and cursY <= 657):
                     player.Double(deck)
                     print("Double")
-                    return True
+                    time.sleep(0.5)
+                    return False
                 #Split
-                if keyNum == pygame.K_4:
-                    #code may break here
+                elif clickL and (cursX >= 835 and cursX <= 925) and (cursY >= 630 and cursY <= 657):
                     if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
-                        player.Split(deck)
+                        possible = player.Split(deck)
+                        #skip if player cannot afford
+                        if not possible:
+                            time.sleep(0.5)
+                            continue
                         print("Split")
-                        doSplit(deck,player)
+                        cont = doSplit(deck,player)
+                        if cont:
+                            return True
+                        else:
+                            time.sleep(0.5)
+                            continue
+
+                elif clickL and (cursX >= 1075 and cursX <= 1200) and (cursY >=0 and cursY <=50):
+                    return True
         else:
             while True:
                 result = player.computeTurn(deck,dealer.hand)
@@ -159,22 +208,21 @@ def getPlayerTurn(player,deck,dealer):
                     player.Hit(deck)
                     print("Hit: {}".format(player.hand))
                     if player.cardSum > 21:
-                        return True
+                        return False
                 elif result == 'S':
                     print("Stand: {}".format(player.cardSum))
                     player.Stand()
-                    return True
+                    return False
                 elif result == 'D':
                     player.Double(deck)
                     print("Double: {}".format(player.hand))
-                    return True
+                    return False
                 elif result == 'X':
-                    print('MAJOR KEY ALERT')
                     if player.splitV == True:
                         #force hit if already split
                         player.Hit(deck)
                         if player.cardSum > 21:
-                            return True
+                            return False
                     elif (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
                         player.Split(deck)
                         print("Split")
@@ -192,8 +240,13 @@ def getPlayerTurn(player,deck,dealer):
         player.Hit(deck)
         player.Hit(deck)
         print("Player Hand: {}, Sum {}".format(player.hand,player.cardSum))
-    getBet()
-    turnOver = getAction()
+    cont = getBet()
+    #end program
+    if cont:
+        return True
+    cont = getAction()
+    if cont:
+        return True
 
 def initDeck(deck):
     deck.newDeck(deckNum)
@@ -218,7 +271,9 @@ def startRound(deck,dealer):
     #print("Dealer First card and Sum: {}".format(result))
     for i in range(len(playList)):
         player = playList[i]
-        getPlayerTurn(player,deck,dealer)
+        cont = getPlayerTurn(player,deck,dealer)
+        if cont:
+            return False
         print("Player {} Hand: {}".format(i,player.hand))
 
     result = getDealerTurn(deck,dealer)
@@ -270,7 +325,7 @@ def startRound(deck,dealer):
                 player.playerWin()
             elif player.cardSum <= dSum or (player.cardSum > 21):
                 player.playerLoss()
-    return
+    return True
 #
 #(deck,dealer) = initGame()
 #while True:

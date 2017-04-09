@@ -4,7 +4,7 @@ from random import randrange
 class Player:
     def __init__(self,bot=False):
         self.hand = []
-        self.money = 50000 #NOTE:change this
+        self.money = 500
         self.bet = 5
         self.split = False
         self.splitV = False
@@ -116,16 +116,26 @@ class Player:
 
     #TODO:check that player cant split if money isnt suffiecient
     def Split(self,deck):
+        if (self.money-(self.bet*2)) < 0:
+            return False
         if (len(self.hand) == 2) and (self.hand[0][1] == self.hand[1][1]):
             self.split = True
             self.splitV = True
             self.bet2 = self.bet
             card = self.hand[-1]
             del self.hand[-1]
-            self.cardSum2 += (self.cardSum/2)
-            self.cardSum -= (self.cardSum/2)
+            #unique case of double aces
+            if self.hand[0][1] == "A":
+                self.cardSum2 = 11
+                self.cardSum = 11
+                self.ace = True
+                self.ace2 = True
+            else:
+                self.cardSum2 += (self.cardSum/2)
+                self.cardSum -= (self.cardSum/2)
             self.hand2 = []
             self.hand2.append(card)
+            return True
 
 
     def playerWin(self):
