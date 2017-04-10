@@ -1,7 +1,7 @@
 import sys, pygame
 from time import sleep
 from Cardpile import cardPile
-import Game
+from Game import initGame, startRound
 
 size = width, height = 1200, 750 #very odd size
 pygame.init() #very important
@@ -17,6 +17,9 @@ pygame.display.set_caption(title, "Blackjack") #displays title top of window
 Tfont = pygame.font.Font(None, 100) #get text font
 Mfont = pygame.font.Font(None, 60) #get text font\
 Nfont = pygame.font.Font(None, 20) #text on chips
+
+playCount = 1 #number of players
+botCount = 0 #number of bots
 
 cardWidth = 40
 cardHeight = 60
@@ -67,7 +70,6 @@ def drawOptions():
 def drawTitleScreen():
     #TODO: Move elements to align nicer
     #TODO: BE sure to change arguments for when clicked on to new location(s)
-
     screen.fill(green)
     #i will fix the alignment of title and these later
     screen.blit(gameName,(400,100))#draw title
@@ -109,13 +111,7 @@ def drawGameScreen():
     screen.blit(split,(835,625))
     screen.blit(betString,(1035,455))
 
-
-    #NOTE:Make sure this is done last
-    #NOTE:this may need some editing
-    #for i in range(len(playlist)):
-        #drawplayers hand
-        #draw the players bet underneather their position
-
+    #TODO: DRAW PLAYER MONEY AND BET
 
     pygame.display.flip() ##update display **very important**
 
@@ -148,13 +144,14 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
     if startScreen:
         drawGameScreen()
         if startGame:
-            (deck,dealer) = Game.initGame()
+            #players, bots, decknums
+            (deck,dealer) = initGame(playCount,botCount,3,screen)
             startGame = False
             cont = True
         #start gets set to false when player selects back
         while cont:
             drawGameScreen()
-            cont = Game.startRound(deck, dealer)
+            cont = startRound(deck, dealer)
 
         if not cont:
             titleScreen = True

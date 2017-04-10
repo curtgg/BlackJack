@@ -2,11 +2,33 @@ from Deck import Deck
 from Player import Player, Dealer
 import pygame
 import time
-
-playCount = 1 #number of players
-botCount = 0 #number of bots
-deckNum = 150 #number of decks sepecified
+from Cardpile import cardPile
+deckNum = 5 #number of decks sepecified
 playList = []
+screenL = []
+pCards = []
+black = (0,0,0)
+green = (4, 134, 21) #defines game board colour
+
+Mfont = pygame.font.Font(None, 40) #get text font
+sumD = Mfont.render("Dealers Sum:",0, black)#sum string
+
+
+def drawDealer(dealer,card):
+    pygame.draw.rect(screenL[0],green,[670,80,40,40])
+    time.sleep(0.2)
+    D = Mfont.render(str(dealer.cardSum),0, black)#sum string
+    cPile = pCards[0]
+    cPile.drawCard(card[0],card[1],screenL[0])
+    screenL[0].blit(sumD,(490,90))
+    screenL[0].blit(D,(680,90))
+    pygame.display.flip() ##update display **very important**
+
+def drawCards(player,card):
+    cPile = pCards[player.num+1]
+    cPile.drawCard(card[0],card[1],screenL[0])
+    pygame.display.flip() ##update display **very important**
+
 
 def getInput():
     events = pygame.event.get()
@@ -29,10 +51,12 @@ def getDealerTurn(deck,dealer):
     #prev round
     if dealer.done:
         dealer.clearHand()
+        pCards[0].clearCard()
 
     #only if <1, as in start of round
     if len(dealer.hand) < 1:
         dealer.draw(deck)
+        drawDealer(dealer,dealer.hand[-1])
         print("Dealer Hand: {}".format(dealer.hand))
         return (dealer.hand,dealer.cardSum)
 
@@ -41,7 +65,10 @@ def getDealerTurn(deck,dealer):
     print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
     while dealer.cardSum < 17 or (dealer.cardSum == 17 and dealer.ace):
         dealer.draw(deck)
+        drawDealer(dealer,dealer.hand[-1])
+        time.sleep(1)
         print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
+    time.sleep(5)
     return (dealer.hand,dealer.cardSum)
 
 
@@ -58,6 +85,7 @@ def getPlayerTurn(player,deck,dealer):
         #NOTE:Absolutely zero support for more than 1 splits
         if player.bot:
             player.Hit(deck)
+            drawCards(player,player.hand[-1])
             while True:
                 time.sleep(1)
                 turn = player.computeTurn(deck,dealer.hand)
@@ -65,6 +93,7 @@ def getPlayerTurn(player,deck,dealer):
                 if turn == 'H' or turn == 'X':
                     #force hit on a split, only 1 split allowed
                     player.Hit(deck)
+                    drawCards(player,player.hand[-1])
                     if player.cardSum2 > 21:
                         player.split = False
                         return False
@@ -86,6 +115,7 @@ def getPlayerTurn(player,deck,dealer):
                 #Hit
                 if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
+                    drawCards(player,player.hand[-1])
                     time.sleep(0.5)
                     if player.cardSum2 > 21:
                         player.split = False
@@ -167,6 +197,7 @@ def getPlayerTurn(player,deck,dealer):
                 #Hit
                 if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
+                    drawCards(player,player.hand[-1])
                     time.sleep(0.5)
                     if player.cardSum > 21:
                         return False
@@ -206,6 +237,7 @@ def getPlayerTurn(player,deck,dealer):
                 result = player.computeTurn(deck,dealer.hand)
                 if result == 'H':
                     player.Hit(deck)
+                    drawCards(player,player.hand[-1])
                     print("Hit: {}".format(player.hand))
                     if player.cardSum > 21:
                         return False
@@ -221,6 +253,7 @@ def getPlayerTurn(player,deck,dealer):
                     if player.splitV == True:
                         #force hit if already split
                         player.Hit(deck)
+                        drawCards(player,player.hand[-1])
                         if player.cardSum > 21:
                             return False
                     elif (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
@@ -228,6 +261,7 @@ def getPlayerTurn(player,deck,dealer):
                         print("Split")
                         doSplit(deck,player)
                         player.Hit(deck)
+                        drawCards(player,player.hand[-1])
 
 
 
@@ -238,7 +272,9 @@ def getPlayerTurn(player,deck,dealer):
 
     if len(player.hand) < 2:
         player.Hit(deck)
+        drawCards(player,player.hand[-1])
         player.Hit(deck)
+        drawCards(player,player.hand[-1])
         print("Player Hand: {}, Sum {}".format(player.hand,player.cardSum))
     cont = getBet()
     #end program
@@ -253,15 +289,22 @@ def initDeck(deck):
     deck.shuffle()
     return deck
 
-def initGame():
+def initGame(playCount,botCount,deckN,scrn):
     #Add players
+    deckNum = deckN
     dealer = Dealer()
+    pCards.append(cardPile(0))
+    screenL.append(scrn)
     for i in range(playCount):
-        player = Player()
+        player = Player(i)
+        cPile = cardPile(i+1)
         playList.append(player)
+        pCards.append(cPile)
     for i in range(botCount):
-        bot = Player(True)
+        bot = Player(i+playCount,True)
+        cPile = cardPile(i+playCount+1)
         playList.append(bot)
+        pCards.append(cPile)
     deck = Deck() #init deck
     deck = initDeck(deck)
     return (deck,dealer)
@@ -326,7 +369,3 @@ def startRound(deck,dealer):
             elif player.cardSum <= dSum or (player.cardSum > 21):
                 player.playerLoss()
     return True
-#
-#(deck,dealer) = initGame()
-#while True:
-#    startRound(deck,dealer)

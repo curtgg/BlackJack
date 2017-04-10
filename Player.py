@@ -2,7 +2,8 @@ from Deck import Deck
 from random import randrange
 
 class Player:
-    def __init__(self,bot=False):
+    def __init__(self,num,bot=False):
+        self.num = num
         self.hand = []
         self.money = 500
         self.bet = 5
