@@ -1,5 +1,5 @@
 import sys, pygame
-
+import time
 ###not sure how much of this block is necessary, i just threw a lot of shit in
 #while i was trying to get this to work
 
@@ -8,12 +8,15 @@ pygame.init()
 white = (255, 255, 255)
 black = (0, 0, 0) #used for buttons and for spades/clubs
 red = (255, 0 ,0) #used for hearts/diamonds
+green = (4, 134, 21) #defines game board colour
+
 diamond = pygame.image.load("diamond.png")
 club = pygame.image.load("club.png")
 heart = pygame.image.load("heart.png")
 spade = pygame.image.load("spade.png")
 Vfont = pygame.font.Font(None, 12) #get text font
 Mfont = pygame.font.Font(None, 36) #middle card font
+Pfont = pygame.font.Font(None,25)
 cardWidth = 40
 cardHeight = 60
 
@@ -27,7 +30,7 @@ class cardPile:
 
     ###when giving inputs to this, i think we will have to split the tuples that are made
       #when the cards are dealt for suit and value
-    def drawCard(self, suit, value, screen):
+    def drawCard(self, suit, value,split, screen):
         ###this is the lazy code i talked about, not sure of the best way to do lines 26-56
         if self.position == 0:
             x = 580
@@ -61,8 +64,11 @@ class cardPile:
             colour = red
             suit = heart
 
-        #an attempt to fix the cards being too high when switching menus
-        if self.numCards > 0:
+        #if dealer move cards right for successive cards
+        if self.position == 0 and self.numCards > 0:
+            x += (0 + (self.numCards*16))
+        #if player shift up for successive cards
+        elif self.position != 0 and self.numCards > 0:
              y -= (0 + ((self.numCards)*8)) #need to adjust where the card is drawn
                                                    #based on how many cards were drawn before it
 
@@ -89,9 +95,49 @@ class cardPile:
         self.numCards += 1
 
 
+    def drawStats(self,money,bet,cSum,cSum2,split,screen):
+        '''
+        Function used to update the players stats such as their bet and cash stack.
+
+        Args:
+            self - Cardpile object corresponding to the player we wish to update stats on
+            money - Players money
+            bet - players current bet
+            screen - current display
+        '''
+        #this shouldnt happen
+        if self.position == 0:
+            return
+        elif self.position == 1:
+            x = 580
+            y = 505
+        elif self.position == 2:
+            x = 280
+            y = 450
+        elif self.position == 3:
+            x = 845
+            y = 440
+        elif self.position == 4:
+            x = 60
+            y = 250
+        elif self.position == 5:
+            x = 1055
+            y = 250
+
+        pygame.draw.rect(screen,green,[x,y,90,70]) #cover old stats
+        money = Pfont.render("Cash: " + str(money),0,black)
+        bet = Pfont.render("Bet: " + str(bet),0,black)
+        if split:
+            cardSum = Pfont.render("Sum: " + str(int(cSum)) + ", " + str(int(cSum2)),0,black)
+        else:
+            cardSum = Pfont.render("Sum: " + str(cSum),0,black)
+        screen.blit(money,(x,y))
+        screen.blit(bet,(x,y+20))
+        screen.blit(cardSum,(x,y+40))
+
+
     def clearCard(self):
         self.numCards = 0
-        pass
 
     def splitCard(self, position, suit, value):
         #redraw table at position, draw first card again and then draw second card beside it

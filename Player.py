@@ -182,23 +182,28 @@ class Player:
         '''
         #TODO:Choose better values for betting
         count = deck.getCount()
-        randNum = randrange(0,10) # for use later
+        confidence = randrange(1,4) # for use later
         #NOTE:Basic cases
-        if count < -2:
-            self.bet = 5
-            #bet very low
-        elif count < 0:
-            self.bet = 10
-            #bet low
-        elif count < 3:
-            self.bet = 15
-            #bet neutral
-        elif count < 5:
-            self.bet = 20
-            #bet high
-        elif count > 6:
-            self.bet = 25
-            #bet very high
+        while True:
+            if count < -2:
+                self.bet = 5*confidence
+                #bet very low
+            elif count < 0:
+                self.bet = 10*confidence
+                #bet low
+            elif count < 3:
+                self.bet = 15*confidence
+                #bet neutral
+            elif count < 5:
+                self.bet = 20*confidence
+                #bet high
+            elif count >= 6:
+                self.bet = 25*confidence
+                #bet very high
+            if self.money - self.bet < 0:
+                continue
+            else:
+                return
 
     def computeTurn(self,deck,hand):
         '''
@@ -227,7 +232,7 @@ class Player:
                     #if split is possible
                     turn = table[(self.hand[0][1],dVal)]
                     return turn
-        if cSum < 5:
+        if cSum <= 8:
             turn = 'H'
             return turn
         if cSum <= 12 and ace:
@@ -311,18 +316,6 @@ table = {
 
 (9,'2'):'D',(9,'3'):'D',(9,'4'):'D',(9,'5'):'D',(9,'6'):'D',(9,'7'):'H',(9,'8'):'H',
 (9,'9'):'H',(9,'10'):'H',(9,'J'):'H',(9,'K'):'H',(9,'Q'):'H',(9,'A'):'H',
-
-(8,'2'):'H',(8,'3'):'H',(8,'4'):'H',(8,'5'):'H',(8,'6'):'H',(8,'7'):'H',(8,'8'):'H',
-(8,'9'):'H',(8,'10'):'H',(8,'J'):'H',(8,'K'):'H',(8,'Q'):'H',(8,'A'):'H',
-
-(7,'2'):'H',(7,'3'):'H',(7,'4'):'H',(7,'5'):'H',(7,'6'):'H',(7,'7'):'H',(7,'8'):'H',
-(7,'9'):'H',(7,'10'):'H',(7,'J'):'H',(7,'K'):'H',(7,'Q'):'H',(7,'A'):'H',
-
-(6,'2'):'H',(6,'3'):'H',(6,'4'):'H',(6,'5'):'H',(6,'6'):'H',(6,'7'):'H',(6,'8'):'H',
-(6,'9'):'H',(6,'10'):'H',(6,'J'):'H',(6,'K'):'H',(6,'Q'):'H',(6,'A'):'H',
-
-(5,'2'):'H',(5,'3'):'H',(5,'4'):'H',(5,'5'):'H',(5,'6'):'H',(5,'7'):'H',(5,'8'):'H',
-(5,'9'):'H',(5,'10'):'H',(5,'J'):'H',(5,'K'):'H',(5,'Q'):'H',(5,'A'):'H',
 
 ##BELOW ARE COMBO'S WHERE PLAYER HAS AN ACE AND THEREFORE HAS A SOFT HAND
 ## FORMAT CHANGES TO ((playerSum,'S'),dealerCard) : Optimal Move

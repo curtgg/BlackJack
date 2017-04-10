@@ -19,7 +19,7 @@ Mfont = pygame.font.Font(None, 60) #get text font\
 Nfont = pygame.font.Font(None, 20) #text on chips
 
 playCount = 1 #number of players
-botCount = 0 #number of bots
+botCount = 4 #number of bots
 
 cardWidth = 40
 cardHeight = 60
@@ -150,8 +150,8 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
             cont = True
         #start gets set to false when player selects back
         while cont:
-            drawGameScreen()
             cont = startRound(deck, dealer)
+            drawGameScreen()
 
         if not cont:
             titleScreen = True
