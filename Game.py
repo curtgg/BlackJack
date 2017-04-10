@@ -238,6 +238,7 @@ def getPlayerTurn(player,deck,dealer):
                             continue
                         print("Split")
                         cont = doSplit(deck,player)
+                        #TODO: split draw function here
                         if cont:
                             return True
                         else:

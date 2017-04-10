@@ -27,6 +27,7 @@ class cardPile:
     def __init__(self, position):
         self.position = position
         self.numCards = 0
+        self.splitCards = 0
 
     ###when giving inputs to this, i think we will have to split the tuples that are made
       #when the cards are dealt for suit and value
@@ -88,12 +89,20 @@ class cardPile:
 
 
         #if dealer move cards right for successive cards
-        if self.position == 0 and self.numCards > 0:
-            x += (0 + (self.numCards*16))
-        #if player shift up for successive cards
-        elif self.position != 0 and self.numCards > 0:
-             y -= (0 + ((self.numCards)*8)) #need to adjust where the card is drawn
-                                                   #based on how many cards were drawn before it
+        if not player.split:
+            if self.position == 0 and self.numCards > 0:
+                x += (0 + (self.numCards*16))
+            #if player shift up for successive cards
+            elif self.position != 0 and self.numCards > 0:
+                 y -= (0 + ((self.numCards)*8)) #need to adjust where the card is drawn
+                                                       #based on how many cards were drawn before it
+        else:
+            if self.position == 0 and self.numCards > 0:
+                x += (0 + (self.splitCards*16))
+            #if player shift up for successive cards
+            elif self.position != 0 and self.numCards > 0:
+                 y -= (0 + ((self.splitCards)*8)) #need to adjust where the card is drawn
+                                                       #based on how many cards were drawn before it
 
 
 
@@ -113,7 +122,10 @@ class cardPile:
         else:
             screen.blit(middleFont, (x+14, y+18))
 
-        self.numCards += 1
+        if player.split:
+            self.splitCards += 1
+        else:
+            self.numCards += 1
 
 
     def drawStats(self,money,bet,cSum,cSum2,split,screen):
@@ -160,6 +172,112 @@ class cardPile:
     def clearCard(self):
         self.numCards = 0
 
-    def splitCard(self, position, suit, value):
-        #redraw table at position, draw first card again and then draw second card beside it
-        pass
+    def splitCard(self, player,screen):
+        '''
+        Call after you preform split function from player class
+        removes old cards and places the 2 split cards independently
+            Args:
+            Self - cardpile object
+            player - player object
+            screen - display
+        '''
+        if self.position == 0:
+            return
+        elif self.position == 1:
+            x1 = 580
+            y1 = 420
+            x2 = 630
+            y2 = 420
+        elif self.position == 2:
+            x1 = 380
+            y1 = 350
+            x2 = 430
+            y2 = 350
+        elif self.position == 3:
+            x1 = 780
+            y1 = 350
+            x2 = 830
+            y2 = 350
+        elif self.position == 4:
+            x1 = 180
+            y1 = 170
+            x2 = 230
+            y2 = 170
+        elif self.position == 5:
+            x1 = 980
+            y1 = 170
+            x2 = 930
+            y2 = 170
+        pygame.draw.rect(screen,red,[x,y,cardWidth,cardHeight*2])
+        #cover old cards
+        card1 = player.hand[0]
+        card2 = player.hand[1]
+        suit1 = card1[0]
+        suit2 = card2[0]
+        value1 = card1[1]
+        value2 = card2[2]
+
+        if suit1 == ('D'):
+            colour1 = red
+            suit1 = diamond
+        elif suit1 == ('S'):
+            colour1 = black
+            suit1 = spade
+        elif suit1 == ('C'):
+            colour1 = black
+            suit1 = club
+        elif suit1 == ('H'):
+            colour1 = red
+            suit1 = heart
+        valueFont1 = Vfont.render(value1, 0, colour1)
+        middleFont1 = Mfont.render(value1, 0, colour1)
+
+        if suit2 == ('D'):
+            colour2 = red
+            suit2 = diamond
+        elif suit2 == ('S'):
+            colour2 = black
+            suit2 = spade
+        elif suit2 == ('C'):
+            colour2 = black
+            suit2 = club
+        elif suit2 == ('H'):
+            colour2 = red
+            suit2 = heart
+        valueFont2 = Vfont.render(value2, 0, colour2)
+        middleFont2 = Mfont.render(value2, 0, colour2)
+
+
+
+        pygame.draw.rect(screen, white, [x1, y1, cardWidth, cardHeight])
+        screen.blit(suit1,(x1, y1+cardHeight-8))
+        screen.blit(suit1,(x1+cardWidth-8, y1))
+        screen.blit(valueFont1, (x1+8,y1+cardHeight-8))
+        screen.blit(valueFont1, (x1+cardWidth-8-8,y1))
+
+        pygame.draw.rect(screen, white, [x2, y2, cardWidth, cardHeight])
+        screen.blit(suit2,(x2, y2+cardHeight-8))
+        screen.blit(suit2,(x2+cardWidth-8, y2))
+        screen.blit(valueFont2, (x2+8,y2+cardHeight-8))
+        screen.blit(valueFont2, (x2+cardWidth-8-8,y2))
+
+
+        ###for some reason if the numbers were centered, the letters wouldnt be.
+        #  so i had to create different cases
+        letterValues = {'A','J','K','Q'}
+        if value1 in letterValues:
+            screen.blit(middleFont1, (x1+12, y1+18))
+        elif value1 == '10':
+            screen.blit(middleFont1, (x1+7, y1+18))
+        else:
+            screen.blit(middleFont1, (x1+14, y1+18))
+
+        if value2 in letterValues:
+            screen.blit(middleFont2, (x2+12, y2+18))
+        elif value2 == '10':
+            screen.blit(middleFont2, (x2+7, y2+18))
+        else:
+            screen.blit(middleFont2, (x2+14, y2+18))
+
+        self.splitCards = 1
+        self.numCards = 1
