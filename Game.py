@@ -76,14 +76,14 @@ def drawDealer(dealer,card):
     time.sleep(0.2)
     D = Mfont.render(str(dealer.cardSum),0, black)#sum string
     cPile = pCards[0]
-    cPile.drawCard(card[0],card[1],False,screenL[0])
+    cPile.drawCard(dealer,screenL[0])
     screenL[0].blit(sumD,(490,90))
     screenL[0].blit(D,(680,90))
     pygame.display.flip() ##update display **very important**
 
 def drawCards(player,card):
     cPile = pCards[player.num+1]
-    cPile.drawCard(card[0],card[1],player.splitV,screenL[0])
+    cPile.drawCard(player,screenL[0])
     pygame.display.flip() ##update display **very important**
 
 

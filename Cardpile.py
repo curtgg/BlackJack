@@ -30,26 +30,9 @@ class cardPile:
 
     ###when giving inputs to this, i think we will have to split the tuples that are made
       #when the cards are dealt for suit and value
-    def drawCard(self, suit, value,split, screen):
-        ###this is the lazy code i talked about, not sure of the best way to do lines 26-56
-        if self.position == 0:
-            x = 580
-            y = 160
-        elif self.position == 1:
-            x = 580
-            y = 420
-        elif self.position == 2:
-            x = 380
-            y = 350
-        elif self.position == 3:
-            x = 780
-            y = 350
-        elif self.position == 4:
-            x = 180
-            y = 170
-        elif self.position == 5:
-            x = 980
-            y = 170
+    def drawCard(self, player, screen):
+        suit = player.hand[-1][0]
+        value = player.hand[-1][1]
 
         if suit == ('D'):
             colour = red
@@ -63,6 +46,46 @@ class cardPile:
         elif suit == ('H'):
             colour = red
             suit = heart
+        valueFont = Vfont.render(value, 0, colour)
+        middleFont = Mfont.render(value, 0, colour)
+
+        #test
+        if self.position == 0:
+            x = 580
+            y = 160
+        elif self.position == 1:
+            x = 580
+            y = 420
+            if player.split:
+                x = 630
+                y = 420
+        elif self.position == 2:
+            x = 380
+            y = 350
+            if player.split:
+                x = 430
+                y = 350
+        elif self.position == 3:
+            x = 780
+            y = 350
+
+            if player.split:
+                x = 830
+                y = 350
+        elif self.position == 4:
+            x = 180
+            y = 170
+
+            if player.split:
+                x = 230
+                y = 170
+        elif self.position == 5:
+            x = 980
+            y = 170
+            if player.split:
+                x = 930
+                y = 170
+
 
         #if dealer move cards right for successive cards
         if self.position == 0 and self.numCards > 0:
@@ -73,8 +96,6 @@ class cardPile:
                                                    #based on how many cards were drawn before it
 
 
-        valueFont = Vfont.render(value, 0, colour)
-        middleFont = Mfont.render(value, 0, colour)
 
         pygame.draw.rect(screen, white, [x, y, cardWidth, cardHeight])
         screen.blit(suit,(x, y+cardHeight-8))

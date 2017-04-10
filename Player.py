@@ -261,6 +261,7 @@ class Dealer:
             self.cardSum = 0
             self.ace = False
             self.done = False
+            self.split = False
 
         def clearHand(self):
             del self.hand
