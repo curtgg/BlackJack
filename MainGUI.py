@@ -1,7 +1,7 @@
 import sys, pygame
 from time import sleep
 from Cardpile import cardPile
-from Game import initGame, startRound
+from Game import initGame, startRound, initDeck
 
 size = width, height = 1200, 750 #very odd size
 pygame.init() #very important
@@ -18,8 +18,8 @@ Tfont = pygame.font.Font(None, 100) #get text font
 Mfont = pygame.font.Font(None, 60) #get text font\
 Nfont = pygame.font.Font(None, 20) #text on chips
 
-playCount = 1 #number of players
-botCount = 4 #number of bots
+playCount = 0 #number of players
+botCount = 5 #number of bots
 
 cardWidth = 40
 cardHeight = 60
@@ -151,6 +151,11 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
         #start gets set to false when player selects back
         while cont:
             cont = startRound(deck, dealer)
+            #reshuffle if smaller than 25 cards remaining
+            if (deck.deckSize()) < 25:
+                deck.burnCards(deck.deckSize)
+                deck = initDeck(deck)
+
             drawGameScreen()
 
         if not cont:

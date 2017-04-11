@@ -9,6 +9,7 @@ white = (255, 255, 255)
 black = (0, 0, 0) #used for buttons and for spades/clubs
 red = (255, 0 ,0) #used for hearts/diamonds
 green = (4, 134, 21) #defines game board colour
+tableRed = (190, 34, 34)#used for table
 
 diamond = pygame.image.load("diamond.png")
 club = pygame.image.load("club.png")
@@ -204,18 +205,18 @@ class cardPile:
             x2 = 230
             y2 = 170
         elif self.position == 5:
-            x1 = 980
-            y1 = 170
-            x2 = 930
+            x2 = 980
             y2 = 170
-        pygame.draw.rect(screen,red,[x,y,cardWidth,cardHeight*2])
+            x1 = 930
+            y1 = 170
+        pygame.draw.rect(screen,tableRed,[x1,y1-cardHeight,cardWidth,cardHeight*4])
         #cover old cards
         card1 = player.hand[0]
-        card2 = player.hand[1]
+        card2 = player.hand2[0]
         suit1 = card1[0]
         suit2 = card2[0]
         value1 = card1[1]
-        value2 = card2[2]
+        value2 = card2[1]
 
         if suit1 == ('D'):
             colour1 = red

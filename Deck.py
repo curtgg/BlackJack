@@ -93,6 +93,7 @@ class Deck:
         Args:
             n - number of cards to burn
         '''
+        self.count = 0
         for i in range(n):
             draw = self.draw()
     def getCount(self):

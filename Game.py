@@ -14,7 +14,6 @@ Mfont = pygame.font.Font(None, 40) #get text font
 sumD = Mfont.render("Dealers Sum:",0, black)#sum string
 #TODO:draw split handling
 def updateStats(player):
-    #TODO:split handling
     cPile = pCards[player.num+1]
     cPile.drawStats(player.money,player.bet,player.cardSum,player.cardSum2,player.splitV,screenL[0])
     pygame.display.flip() ##update display **very important**
@@ -144,8 +143,8 @@ def getPlayerTurn(player,deck,dealer):
             player.Hit(deck)
             drawCards(player,player.hand[-1])
             updateStats(player)
+            print("Player Hand2: {}".format(player.hand2))
             while True:
-                time.sleep(1)
                 turn = player.computeTurn(deck,dealer.hand)
                 #Hit
                 if turn == 'H' or turn == 'X':
@@ -153,6 +152,7 @@ def getPlayerTurn(player,deck,dealer):
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
                     updateStats(player)
+                    time.sleep(1)
                     if player.cardSum2 > 21:
                         player.split = False
                         return False
@@ -160,6 +160,7 @@ def getPlayerTurn(player,deck,dealer):
                 #Stand
                 elif turn == 'S':
                     player.Stand()
+                    time.sleep(1)
                     return False
                     print("Stand")
                 #Double
@@ -167,6 +168,7 @@ def getPlayerTurn(player,deck,dealer):
                     player.Double(deck)
                     player.split = False
                     print("Double")
+                    time.sleep(1)
                     return False
         else:
             while True:
@@ -202,7 +204,7 @@ def getPlayerTurn(player,deck,dealer):
         Get user action, i.e Hit, split etc
         '''
         print("Make your move. hit-1, stand-2, double-3, split-4?")
-        print("phand: {}".format(player.hand))
+        print("player hand: {}, Sum: {}".format(player.hand,player.cardSum))
         if not player.bot:
             while True:
                 #TODO: MAKE GET INPUT FUNCTION
@@ -232,13 +234,13 @@ def getPlayerTurn(player,deck,dealer):
                 elif clickL and (cursX >= 835 and cursX <= 925) and (cursY >= 630 and cursY <= 657):
                     if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
                         possible = player.Split(deck)
+                        pCards[player.num+1].splitCard(player,screenL[0])
                         #skip if player cannot afford
                         if not possible:
                             time.sleep(0.5)
                             continue
                         print("Split")
                         cont = doSplit(deck,player)
-                        #TODO: split draw function here
                         if cont:
                             return True
                         else:
@@ -249,21 +251,25 @@ def getPlayerTurn(player,deck,dealer):
                     return True
         else:
             while True:
+
                 result = player.computeTurn(deck,dealer.hand)
                 if result == 'H':
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
                     updateStats(player)
-                    print("Hit: {}".format(player.hand))
+                    print("Hit: {}, Sum: {}".format(player.hand,player.cardSum))
+                    time.sleep(1)
                     if player.cardSum > 21:
                         return False
                 elif result == 'S':
-                    print("Stand: {}".format(player.cardSum))
+                    print("Stand: {}, Sum: {}".format(player.hand,player.cardSum))
                     player.Stand()
+                    time.sleep(1)
                     return False
                 elif result == 'D':
                     player.Double(deck)
-                    print("Double: {}".format(player.hand))
+                    print("Double: {}, Sum: {}".format(player.hand,player.cardSum))
+                    time.sleep(1)
                     return False
                 elif result == 'X':
                     if player.splitV == True:
@@ -271,15 +277,18 @@ def getPlayerTurn(player,deck,dealer):
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
                         updateStats(player)
+                        time.sleep(1)
                         if player.cardSum > 21:
                             return False
                     elif (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
                         player.Split(deck)
+                        pCards[player.num+1].splitCard(player,screenL[0])
                         print("Split")
                         doSplit(deck,player)
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
                         updateStats(player)
+                        time.sleep(1)
 
 
 
