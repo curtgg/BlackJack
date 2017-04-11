@@ -3,22 +3,40 @@ from Player import Player, Dealer
 import pygame
 import time
 from Cardpile import cardPile
-deckNum = 5 #number of decks sepecified
-playList = []
-screenL = []
-pCards = []
-black = (0,0,0)
+playList = [] #list of players
+screenOp = [] #list of screen options
+pCards = [] #list of players hand drawing objects
+black = (0,0,0) #colour of text
 green = (4, 134, 21) #defines game board colour
-
 Mfont = pygame.font.Font(None, 40) #get text font
 sumD = Mfont.render("Dealers Sum:",0, black)#sum string
 #TODO:draw split handling
-def updateStats(player):
+def updateStats(player,deck):
     cPile = pCards[player.num+1]
-    cPile.drawStats(player.money,player.bet,player.cardSum,player.cardSum2,player.splitV,screenL[0])
+    cPile.drawStats(player.money,player.bet,player.cardSum,player.cardSum2,player.splitV,screenOp[0])
+    if screenOp[1] == True:
+        drawCount(deck)
     pygame.display.flip() ##update display **very important**
 
+def drawDealer(dealer,card):
+    pygame.draw.rect(screenOp[0],green,[670,80,40,40])
+    time.sleep(0.2)
+    D = Mfont.render(str(dealer.cardSum),0, black)#sum string
+    cPile = pCards[0]
+    cPile.drawCard(dealer,screenOp[0])
+    screenOp[0].blit(sumD,(490,90))
+    screenOp[0].blit(D,(680,90))
+    pygame.display.flip() ##update display **very important**
 
+def drawCards(player,card):
+    cPile = pCards[player.num+1]
+    cPile.drawCard(player,screenOp[0])
+    pygame.display.flip() ##update display **very important**
+
+def drawCount(deck):
+    pygame.draw.rect(screenOp[0],green,[0,10,200,30])
+    word = Mfont.render("Card Count: " + str(int(deck.count/deck.deckN)),0,black)
+    screenOp[0].blit(word,(0,10))
 
 def getBet(player,deck):
     #no money to play
@@ -62,28 +80,13 @@ def getBet(player,deck):
                     return True
                 elif clickL and (cursX >= 1038 and cursX <= 1102) and (cursY >= 461 and cursY <=486):
                     return False
-                updateStats(player)
+                updateStats(player,deck)
         else:
             #NOTE: IF bot compute the bet
             time.sleep(1)
             player.computeBet(deck)
-            updateStats(player)
+            updateStats(player,deck)
             print("Player Bet:{} and count: {}".format(player.bet,deck.count))
-
-def drawDealer(dealer,card):
-    pygame.draw.rect(screenL[0],green,[670,80,40,40])
-    time.sleep(0.2)
-    D = Mfont.render(str(dealer.cardSum),0, black)#sum string
-    cPile = pCards[0]
-    cPile.drawCard(dealer,screenL[0])
-    screenL[0].blit(sumD,(490,90))
-    screenL[0].blit(D,(680,90))
-    pygame.display.flip() ##update display **very important**
-
-def drawCards(player,card):
-    cPile = pCards[player.num+1]
-    cPile.drawCard(player,screenL[0])
-    pygame.display.flip() ##update display **very important**
 
 
 def getInput():
@@ -142,7 +145,7 @@ def getPlayerTurn(player,deck,dealer):
         if player.bot:
             player.Hit(deck)
             drawCards(player,player.hand[-1])
-            updateStats(player)
+            updateStats(player,deck)
             print("Player Hand2: {}".format(player.hand2))
             while True:
                 turn = player.computeTurn(deck,dealer.hand)
@@ -151,7 +154,7 @@ def getPlayerTurn(player,deck,dealer):
                     #force hit on a split, only 1 split allowed
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
-                    updateStats(player)
+                    updateStats(player,deck)
                     time.sleep(1)
                     if player.cardSum2 > 21:
                         player.split = False
@@ -177,7 +180,7 @@ def getPlayerTurn(player,deck,dealer):
                 if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
-                    updateStats(player)
+                    updateStats(player,deck)
                     time.sleep(0.5)
                     if player.cardSum2 > 21:
                         player.split = False
@@ -213,7 +216,7 @@ def getPlayerTurn(player,deck,dealer):
                 if clickL and (cursX >= 485 and cursX <= 540) and (cursY >= 630 and cursY <= 657):
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
-                    updateStats(player)
+                    updateStats(player,deck)
                     time.sleep(0.5)
                     if player.cardSum > 21:
                         return False
@@ -234,7 +237,7 @@ def getPlayerTurn(player,deck,dealer):
                 elif clickL and (cursX >= 835 and cursX <= 925) and (cursY >= 630 and cursY <= 657):
                     if (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
                         possible = player.Split(deck)
-                        pCards[player.num+1].splitCard(player,screenL[0])
+                        pCards[player.num+1].splitCard(player,screenOp[0])
                         #skip if player cannot afford
                         if not possible:
                             time.sleep(0.5)
@@ -256,7 +259,7 @@ def getPlayerTurn(player,deck,dealer):
                 if result == 'H':
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
-                    updateStats(player)
+                    updateStats(player,deck)
                     print("Hit: {}, Sum: {}".format(player.hand,player.cardSum))
                     time.sleep(1)
                     if player.cardSum > 21:
@@ -276,18 +279,18 @@ def getPlayerTurn(player,deck,dealer):
                         #force hit if already split
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
-                        updateStats(player)
+                        updateStats(player,deck)
                         time.sleep(1)
                         if player.cardSum > 21:
                             return False
                     elif (len(player.hand) == 2) and (player.hand[0][1] == player.hand[1][1]) and (player.splitV == False):
                         player.Split(deck)
-                        pCards[player.num+1].splitCard(player,screenL[0])
+                        pCards[player.num+1].splitCard(player,screenOp[0])
                         print("Split")
                         doSplit(deck,player)
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
-                        updateStats(player)
+                        updateStats(player,deck)
                         time.sleep(1)
 
 
@@ -300,11 +303,11 @@ def getPlayerTurn(player,deck,dealer):
     if len(player.hand) < 2:
         player.Hit(deck)
         drawCards(player,player.hand[-1])
-        updateStats(player)
+        updateStats(player,deck)
         time.sleep(0.5)
         player.Hit(deck)
         drawCards(player,player.hand[-1])
-        updateStats(player)
+        updateStats(player,deck)
         time.sleep(0.5)
         print("Player Hand: {}, Sum {}".format(player.hand,player.cardSum))
         return
@@ -312,13 +315,14 @@ def getPlayerTurn(player,deck,dealer):
     if cont:
         return True
 
-def initDeck(deck):
+def initDeck(deck,deckNum):
     deck.newDeck(deckNum)
     deck.shuffle()
     return deck
 
-def initGame(playCount,botCount,deckN,scrn):
+def initGame(playCount,botCount,deckN,scrn,showCount,startCash):
     #reinitialize variables if we already played
+
     if len(playList) != 0:
         pCards.pop() #need extra pop because it is 1 longer
         for i in range(len(playList)):
@@ -328,24 +332,32 @@ def initGame(playCount,botCount,deckN,scrn):
     deckNum = deckN
     dealer = Dealer()
     pCards.append(cardPile(0))
-    screenL.append(scrn)
+    if len(screenOp) >= 2:
+        screenOp[1] = showCount
+    else:
+        screenOp.append(scrn)
+        screenOp.append(showCount)
     #init players
+
+    deck = Deck() #init deck
+    deck = initDeck(deck,deckN)
+
     for i in range(playCount):
         player = Player(i)
         cPile = cardPile(i+1)
+        player.money = startCash
         playList.append(player)
         pCards.append(cPile)
-        updateStats(player)
+        updateStats(player,deck)
     # init bots
     for i in range(botCount):
         bot = Player(i+playCount,True)
         cPile = cardPile(i+playCount+1)
+        bot.money = startCash
         playList.append(bot)
         pCards.append(cPile)
-        updateStats(bot)
+        updateStats(bot,deck)
 
-    deck = Deck() #init deck
-    deck = initDeck(deck)
     return (deck,dealer)
 
 def startRound(deck,dealer):
@@ -353,7 +365,7 @@ def startRound(deck,dealer):
         hand.clearCard()
 
     for player in playList:
-        updateStats(player)
+        updateStats(player,deck)
 
     for x in playList:
         cont = getBet(x,deck)
