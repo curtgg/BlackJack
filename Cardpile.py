@@ -211,7 +211,7 @@ class cardPile:
             y2 = 170
             x1 = 930
             y1 = 170
-        pygame.draw.rect(screen,tableRed,[x1,y1-cardHeight,cardWidth,cardHeight*4])
+        pygame.draw.rect(screen,tableRed,[x1,y1,cardWidth,cardHeight*4])
         #cover old cards
         card1 = player.hand[0]
         card2 = player.hand2[0]
