@@ -182,6 +182,8 @@ class cardPile:
             player - player object
             screen - display
         '''
+        self.splitCards = 0
+        self.numCards = 0
         if self.position == 0:
             return
         elif self.position == 1:
