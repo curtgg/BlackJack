@@ -3,24 +3,26 @@ from random import randrange
 
 class Player:
     def __init__(self,num,bot=False):
+        #init all necessary variables for the class
+        #pass true if player is an AI
+        #num is players position in the pList during the game
         self.num = num
         self.hand = []
         self.money = 500
         self.bet = 5
-        self.split = False
-        self.splitV = False
-        self.cardSum = 0
+        self.split = False #handles split hitting
+        self.splitV = False #handles split case after hitting is over
+        self.cardSum = 0 #sum of players hand 1
         self.cardSum2 = 0
-        self.broke = False
-        self.ace = False
-        self.ace2 = False
+        self.broke = False #if broke true turn is skipped
+        self.ace = False #ace of main hand
+        self.ace2 = False #ace of split hand
         self.bet2 = 0
-        if bot == True:
-            self.bot = True
-        else:
-            self.bot = False
+        self.bot = bot
 
     def clearHand(self):
+        #clears the players hand at
+        #end of a round and reinitializes some variables
         del self.hand
         self.hand = []
         if self.split:
@@ -36,47 +38,61 @@ class Player:
 
 
     def Hit(self,deck):
+        #hits card to player hand
         letters = {'A','J','K','Q'}
-        card = deck.draw()
+        card = deck.draw() #draw from deck
         cVal = card[1]
+        #get value of card
+        #and add to players sum
         if cVal in letters:
             if cVal == 'A':
+                #add 11 set ace to true
                 if self.split:
+                    #if player has a split hand and is not finished hitting to it
                     self.cardSum2 += 11
                     self.ace2 = True
                 else:
+                    #otherwise add to main hand
                     self.cardSum += 11
                     self.ace = True
             else:
+                #add to split if player isnt finished with that hand
                 if self.split:
+                    #if not an ace and in letters it is 10 val
                     self.cardSum2 += 10
                 else:
                     self.cardSum += 10
         else:
             if self.split:
+                #add val to sum
                 self.cardSum2 += int(cVal)
             else:
                 self.cardSum += int(cVal)
+        #if we go over 21 after adding, if we have an ace we are allowed to subtract 10
         if ((self.cardSum > 21) and (self.ace == True)):
             self.cardSum -= 10
             self.ace = False
+        #for the split hand aswell
         if self.split:
             if ((self.cardSum2 > 21) and (self.ace2 == True)):
                 self.cardSum2 -= 10
                 self.ace2 = False
-
+        #adds card to respective hand
         if self.split:
             self.hand2.append(card)
         else:
             self.hand.append(card)
 
     def Stand(self):
+        #if we stand on a split, set split to false so that we stop
+        #adding cards to that hand
         if self.split:
             self.split = False
             self.splitV = True
 
 
     def Double(self,deck):
+        #operates the same as the hit function except doubles the respective bet
         letters = {'A','J','K','Q'}
         card = deck.draw()
         cVal = card[1]
@@ -115,16 +131,21 @@ class Player:
         else:
             self.bet *= 2
 
-    #TODO:check that player cant split if money isnt suffiecient
     def Split(self,deck):
+        #splits are always handled before the main hand
+        #splits the players hand into a second one, only possible if they have 2 of the
+        #same card
+        #check to ensure we have enough money
         if (self.money-(self.bet*2)) < 0:
             return False
+        #if splitting is possible
         if (len(self.hand) == 2) and (self.hand[0][1] == self.hand[1][1]):
+            #set split variables to true
             self.split = True
             self.splitV = True
-            self.bet2 = self.bet
-            card = self.hand[-1]
-            del self.hand[-1]
+            self.bet2 = self.bet #sets second bet to be the same
+            card = self.hand[-1] #grabs second card
+            del self.hand[-1] #deletes it
             #unique case of double aces
             if self.hand[0][1] == "A":
                 self.cardSum2 = 11
@@ -132,36 +153,44 @@ class Player:
                 self.ace = True
                 self.ace2 = True
             else:
+                #add half the total sum to the respective sum
                 self.cardSum2 += (self.cardSum/2)
                 self.cardSum -= (self.cardSum/2)
+            #add card to hand
             self.hand2 = []
             self.hand2.append(card)
             return True
 
 
     def playerWin(self):
+        #if player wins we run this function
+        #if split hand wins we add the second bet to the cash stack
         if self.splitV:
             self.money += self.bet2
             self.split = False
             self.splitV = False
         else:
+            #if main hand wins we add the bet to the cash
             self.money += (self.bet)
-            self.clearHand()
+            self.clearHand() #clear hand
         print("Win, Player Money: {}".format(self.money))
 
     def playerLoss(self):
         """
-        PLAYER SPLIT HAND DOES FIRST ALWAYS
+        Player split loss/win is always handled first
 
         """
+        #subtract the players second bet if split hand loses
         if self.splitV:
             self.money -= self.bet2
             self.split = False
             self.splitV = False
         else:
+            #if main hand loses subtract bet
             self.money -= (self.bet)
             self.clearHand() #only want to clear hand if split dealt with
         if self.money <= 0:
+            #if we run out of money, broke set to true
             self.broke = True
         print("Loss, Player Money: {}".format(self.money))
 
@@ -171,23 +200,18 @@ class Player:
         Using the card count of the deck, the AI attempts to create a bet..
         if count is high
         Args:
+            self - player object as a bot
             deck - Deck class pre initialized
-
-        TODO:
-        Have bot consider his cash stack aswell as the card count
-        when making the decision.
-        Work on making actual decisions rather than RNG based off count
-        maybe some sort of bet scaling based off the count?
-        These values need to be refined
         '''
-        #TODO:Choose better values for betting
         count = deck.getCount()
         confidence = randrange(1,4) # for use later
-        #NOTE:Basic cases
+
+        #if money is running low we use safe bets
         if self.money < 25:
             self.bet = 5
             return
         while True:
+            #otherwise comput a bet based on the card count of the deck
             if count < -2:
                 self.bet = 5*confidence
                 #bet very low
@@ -212,54 +236,57 @@ class Player:
         '''
         Computes the player turn and returns the hand of which the
         optimal turn is and should be played.
-        TODO: finish function
-        -handle splits
-        -handle when player has splitV
-        -handle aces
-        more
+
         '''
         letters = {'J','K','Q'}
-        #maybe splitV
+        #get players sum and ace value
         if self.split:
             cSum = int(self.cardSum2)
-            ace = self.ace
+            ace = self.ace2
         else:
             cSum = int(self.cardSum)
-            ace = self.ace2
+            ace = self.ace
+        #get card value
         dVal = hand[0][1]
+        # we havent split and len of 2. try to split
         if not self.splitV:
             if (self.hand[0][1] == self.hand[1][1] and (len(self.hand) == 2)):
+                #never split 2 10's
                 if self.hand[0][1] in letters:
                     pass
                 else:
-                    #if split is possible
+                    #if split is possible, find split turn
                     turn = table[(self.hand[0][1],dVal)]
                     return turn
+        #hit if lessthan 9 as there is no reason not to
         if cSum <= 8:
             turn = 'H'
             return turn
-        if cSum <= 12 and ace:
-            turn = 'H'
-            return turn
+        #otherwise if not ace and greater than 17 we stand
         if cSum >=17 and not ace:
             turn = 'S'
             return turn
             #maybe splitV
+        #if we have an ace, soft hand
         if ace:
-            #if soft hand
+            #stand at 19
             if cSum >= 19:
                 turn = 'S'
+            #otherwise
             else:
+                #computer turn from soft values
                 turn = table[((cSum,'S'),dVal)]
             print("Soft: {}".format(turn))
             return turn
         else:
+            #otherwise just put sum into table and find normal result
             turn = table[(cSum,dVal)]
             return turn
 
 
 class Dealer:
         def __init__(self):
+            #init variables
             self.hand = []
             self.cardSum = 0
             self.ace = False
@@ -267,6 +294,7 @@ class Dealer:
             self.split = False
 
         def clearHand(self):
+            #reset variables and clear hand
             del self.hand
             self.hand = []
             self.cardSum = 0
@@ -274,6 +302,7 @@ class Dealer:
             self.done = False
 
         def draw(self,deck):
+            #draw a card from the deck
             letters = {'A','J','K','Q'}
             card = deck.draw()
             cVal = card[1]
@@ -284,7 +313,8 @@ class Dealer:
                 else:
                     self.cardSum += 10
             else:
-                self.cardSum += int(cVal)
+                self.cardSum += int(cVal) # add sum
+            #dealer can go over 21 then subtract ten
             if (self.cardSum > 21) and (self.ace == True):
                 self.cardSum -= 10
                 self.ace = False
@@ -292,7 +322,7 @@ class Dealer:
 
 
 
-#DICT WHICH DEFINES PROBABILITY TABLE FOR HINTS AND BOT MOVES
+#DICT WHICH DEFINES PROBABILITY TABLE FOR BOT MOVES
 #FORMAT (playerSum,dealerCard):Optimal Move
 #NOTE:ALL MOVE FOR PLAYER HAND >=17 ARE STAND AND IS NOT INCLUDED IN TABLE**
 #NOTE: S: Stand, H:Hit, X:Split
@@ -349,9 +379,9 @@ table = {
 ((13,'S'),'7'):'H',((13,'S'),'8'):'H',((13,'S'),'9'):'H',((13,'S'),'10'):'H',((13,'S'),'J'):'H',
 ((13,'S'),'K'):'H',((13,'S'),'Q'):'H',((13,'S'),'A'):'H',
 ###ABOVE ARE SOFT HANDS
-## BELOW ARE PAIR cards
+## BELOW ARE PAIR CARDS
 ##SINCE S DENOTES A STAND X DENTOES SPLIT
-#Format NOTE:only if 2 cards are same...(double card,dealercard):"X"
+#Format NOTE:only if 2 cards are same...(str(double card),dealercard):"X"
 ('A','2'):'X',('A','3'):'X',('A','4'):'X',('A','5'):'X',('A','6'):'X',('A','7'):'X',
 ('A','8'):'X',('A','9'):'X',('A','10'):'X',('A','J'):'X',('A','K'):'X',('A','Q'):'X',('A','A'):'X',
 

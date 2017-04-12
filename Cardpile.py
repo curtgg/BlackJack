@@ -184,6 +184,8 @@ class cardPile:
         '''
         self.splitCards = 0
         self.numCards = 0
+        #below, x1,y1 is card of main hand
+        # x2,y2 is pos of second hand card
         if self.position == 0:
             return
         elif self.position == 1:
@@ -211,8 +213,10 @@ class cardPile:
             y2 = 170
             x1 = 930
             y1 = 170
-        pygame.draw.rect(screen,tableRed,[x1,y1,cardWidth,cardHeight*4])
+        pygame.draw.rect(screen,tableRed,[x1,y1-10,cardWidth*2+15,cardHeight+10])
         #cover old cards
+
+        #get values
         card1 = player.hand[0]
         card2 = player.hand2[0]
         suit1 = card1[0]
@@ -220,6 +224,7 @@ class cardPile:
         value1 = card1[1]
         value2 = card2[1]
 
+        #get respective suits
         if suit1 == ('D'):
             colour1 = red
             suit1 = diamond
@@ -247,11 +252,12 @@ class cardPile:
         elif suit2 == ('H'):
             colour2 = red
             suit2 = heart
+
+        #get respective colours
         valueFont2 = Vfont.render(value2, 0, colour2)
         middleFont2 = Mfont.render(value2, 0, colour2)
 
-
-
+        #draw both cards
         pygame.draw.rect(screen, white, [x1, y1, cardWidth, cardHeight])
         screen.blit(suit1,(x1, y1+cardHeight-8))
         screen.blit(suit1,(x1+cardWidth-8, y1))
@@ -268,6 +274,7 @@ class cardPile:
         ###for some reason if the numbers were centered, the letters wouldnt be.
         #  so i had to create different cases
         letterValues = {'A','J','K','Q'}
+        #draw card values
         if value1 in letterValues:
             screen.blit(middleFont1, (x1+12, y1+18))
         elif value1 == '10':
