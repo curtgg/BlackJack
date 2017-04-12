@@ -165,7 +165,6 @@ def drawGameScreen():
     screen.blit(split,(835,625))
     screen.blit(betString,(1035,455))
 
-    #TODO: DRAW PLAYER MONEY AND BET
 
     pygame.display.flip() ##update display **very important**
 

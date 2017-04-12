@@ -33,8 +33,12 @@ class cardPile:
     ###when giving inputs to this, i think we will have to split the tuples that are made
       #when the cards are dealt for suit and value
     def drawCard(self, player, screen):
-        suit = player.hand[-1][0]
-        value = player.hand[-1][1]
+        if player.split:
+            suit = player.hand2[-1][0]
+            value = player.hand2[-1][1]
+        else:
+            suit = player.hand[-1][0]
+            value = player.hand[-1][1]
 
         if suit == ('D'):
             colour = red
