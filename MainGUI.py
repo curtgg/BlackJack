@@ -126,16 +126,12 @@ def drawOptionsScreen():
 
 #draws title screen
 def drawTitleScreen():
-    #TODO: Move elements to align nicer
-    #TODO: BE sure to change arguments for when clicked on to new location(s)
     screen.fill(green)
-    #i will fix the alignment of title and these later
     screen.blit(gameName,(400,100))#draw title
-    screen.blit(start,(465,350))#draw start
-    screen.blit(ops,(465,450))#draw options
-    screen.blit(quit,(465,550))#draw quit
+    screen.blit(start,(545,350))#draw start
+    screen.blit(ops,(517,450))#draw options
+    screen.blit(quit,(542,550))#draw quit
     pygame.display.flip() ##update display **very important**
-    pass
 
 #draws and updates game screen
 def drawGameScreen():
@@ -249,7 +245,7 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
                 else:
                     showCount = True
 
-                print(showCount)    
+                print(showCount)
                 sleep(0.2)
 
 
