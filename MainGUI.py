@@ -189,11 +189,11 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
     if titleScreen:
         drawTitleScreen()
         #Quit button
-        if click and (cursX >= 460 and cursX <= 560) and (cursY >=560 and cursY <=590):
+        if click and (cursX >= 542 and cursX <= 642) and (cursY >=560 and cursY <=590):
             sys.exit()
 
         #Start button
-        if click and (cursX >= 460 and cursX <= 570) and (cursY >=360 and cursY <=390):
+        if click and (cursX >= 545 and cursX <= 655) and (cursY >=360 and cursY <=390):
             titleScreen = False
             startScreen = True
             startGame = True
