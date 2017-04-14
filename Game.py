@@ -12,6 +12,13 @@ Mfont = pygame.font.Font(None, 40) #get text font
 sumD = Mfont.render("Dealers Sum:",0, black)#sum string
 
 def updateStats(player,deck):
+    '''
+    Updates the players stats(sum, bet, etc) under their respective position using the cardPile class,
+    also updates the card counter of the deck if enabled in options
+    Args:
+        Player - player object to have stats updated
+        deck - deck object pre initialized
+    '''
     #get pos to draw stats
     cPile = pCards[player.num+1]
     #draw stats at given position with given stats
@@ -22,6 +29,12 @@ def updateStats(player,deck):
     pygame.display.flip() ##update display **very important**
 
 def drawDealer(dealer,card):
+    '''
+    Draws the dealers card using the cardPile class to determine position
+    Args:
+        Dealer - dealer object
+        card - Card to draw
+    '''
     #cover old dealer sum
     pygame.draw.rect(screenOp[0],green,[670,80,40,40])
     #draw sum
@@ -35,6 +48,12 @@ def drawDealer(dealer,card):
     pygame.display.flip() ##update display **very important**
 
 def drawCards(player,card):
+        '''
+        Draws the players card using the cardPile class to determine position
+        Args:
+            Player - player object
+            card - Card to draw
+        '''
     #get player pos to draw cards, +1 cuz dealer is 0
     cPile = pCards[player.num+1]
     #draw cards at that pos
@@ -42,6 +61,11 @@ def drawCards(player,card):
     pygame.display.flip() ##update display **very important**
 
 def drawCount(deck):
+        '''
+        Draws the card count of the deck
+        Args:
+            deck - deck object
+        '''
     #draw rectangle to cover old card count
     pygame.draw.rect(screenOp[0],green,[0,10,200,30])
     #draw count
@@ -49,6 +73,14 @@ def drawCount(deck):
     screenOp[0].blit(word,(0,10))
 
 def getBet(player,deck):
+        '''
+        Gets the players bet. IF the player is a bot it computes it using the
+        computeBet function. If the player is a player it waits for their input and
+        them to click on the bet button.
+        Args:
+            Player - player object
+            deck - deck object
+        '''
     #no money to play
     if player.money < 5:
         return
@@ -108,6 +140,10 @@ def getBet(player,deck):
 
 
 def getInput():
+    '''
+    Gets and returns user input. Such as their mouse click and position
+    where it was clicked
+    '''
     #gets player input
     events = pygame.event.get()
     curs_pos = pygame.mouse.get_pos()
@@ -123,6 +159,7 @@ def getDealerTurn(deck,dealer):
     Computes the dealer hand.
     Args:
         deck - Deck object, pre initialized
+        dealer - dealer object
     '''
     # if greater than or equal to 2, we know its hand from
     #prev round
@@ -151,9 +188,12 @@ def getDealerTurn(deck,dealer):
 
 def getPlayerTurn(player,deck,dealer):
     '''
-    Gets the players turn
+    Gets the players turn. if bot automatically determines using the computeTurn,
+    otherwise program waits for user input to finish their turn
     Args:
         player - Player object
+        deck - deck object
+        dealer - dealer object
     '''
     turnOver = False
     def doSplit(deck,player):
@@ -354,12 +394,28 @@ def getPlayerTurn(player,deck,dealer):
         return True
 
 def initDeck(deck,deckNum):
+    '''
+    initializes the game deck
+    Args:
+        deck - deck object
+        deckNum - number of decks specified in options
+    '''
     #initialize deck
     deck.newDeck(deckNum)
     deck.shuffle()
     return deck
 
 def initGame(playCount,botCount,deckN,scrn,showCount,startCash):
+    '''
+    Initializes game and deck according the the game optons
+    Args:
+        playCount - number of players
+        botCount - number of bots
+        deckN - number of decks
+        scrn - screen to be drawn onto
+        showCount - whether or not card count is to be displayed
+        startCash - starting player money
+    '''
     #reinitialize variables if we already played
     if len(playList) != 0:
         pCards.pop() #need extra pop because it is 1 longer
@@ -400,6 +456,13 @@ def initGame(playCount,botCount,deckN,scrn,showCount,startCash):
     return (deck,dealer)
 
 def startRound(deck,dealer):
+    '''
+    Starts the game round and computes players bets, turns, and
+    then finishes by checking who wins and loses based on the scenario on the board
+    Args:
+        Deck - deck object
+        dealer - dealer object
+    '''
     #clear player card drawing object
     for hand in pCards:
         hand.clearCard()

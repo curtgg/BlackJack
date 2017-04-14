@@ -21,8 +21,11 @@ class Player:
         self.bot = bot
 
     def clearHand(self):
-        #clears the players hand at
-        #end of a round and reinitializes some variables
+        '''
+        Emptys players hands and reinitialzes variables for the next round
+        Args:
+            Self - Player Object
+        '''
         del self.hand
         self.hand = []
         if self.split:
@@ -38,6 +41,14 @@ class Player:
 
 
     def Hit(self,deck):
+        '''
+        Adds a card to the players hand and subsequently ends his turn, doubles the bet
+        aswell. Only if the player can afford to do so. this function will compute the players split
+        hand then return if the player has a split otherwise the main hand then return
+        Args:
+            Self - Player object
+            Deck - Deck object
+        '''
         #hits card to player hand
         letters = {'A','J','K','Q'}
         card = deck.draw() #draw from deck
@@ -84,14 +95,28 @@ class Player:
             self.hand.append(card)
 
     def Stand(self):
+        '''
+        Stands the player and if the player has a split, sets to false so player can
+        add cards to other hand
+        Args:
+            Self - Player Object
+        '''
         #if we stand on a split, set split to false so that we stop
         #adding cards to that hand
         if self.split:
             self.split = False
-            self.splitV = True
+            self.splitV = True #NOTE:Needs to remain true for checking if player has a split when we check win/loss
 
 
     def Double(self,deck):
+        '''
+        Adds a card to the players hand and subsequently ends his turn, doubles the bet
+        aswell. Only if the player can afford to do so. this function will compute the players split
+        hand then return if the player has a split otherwise the main hand then return
+        Args:
+            Self - Player object
+            Deck - Deck object
+        '''
         #operates the same as the hit function except doubles the respective bet
         letters = {'A','J','K','Q'}
         card = deck.draw()
@@ -132,9 +157,15 @@ class Player:
             self.bet *= 2
 
     def Split(self,deck):
-        #splits are always handled before the main hand
-        #splits the players hand into a second one, only possible if they have 2 of the
-        #same card
+        """
+        Splits the players hands into 2 separate hands to be handled individually
+        the players split hand is always added to and dealt with before the
+        main hand. this function will only proceed if the necessary conditions
+        are met for a split
+        Args:
+            Self - Player object
+            deck - deck object
+        """
         #check to ensure we have enough money
         if (self.money-(self.bet*2)) < 0:
             return False
@@ -163,8 +194,13 @@ class Player:
 
 
     def playerWin(self):
-        #if player wins we run this function
-        #if split hand wins we add the second bet to the cash stack
+        """
+        Player split loss/win is always handled first, then adds
+        necessary funds to the player
+        Args:
+            Self - Player object
+
+        """
         if self.splitV:
             self.money += self.bet2
             self.split = False
@@ -177,7 +213,10 @@ class Player:
 
     def playerLoss(self):
         """
-        Player split loss/win is always handled first
+        Player split loss/win is always handled first, then subtracts
+        necessary funds from the player
+        Args:
+            Self - Player object
 
         """
         #subtract the players second bet if split hand loses
@@ -236,6 +275,10 @@ class Player:
         '''
         Computes the player turn and returns the hand of which the
         optimal turn is and should be played.
+        Args:
+            Self - Player object as a bot
+            deck - pre initialized and shuffled deck
+            hand - hand of the dealer
 
         '''
         letters = {'J','K','Q'}
@@ -302,6 +345,12 @@ class Dealer:
             self.done = False
 
         def draw(self,deck):
+            '''
+            Dealer draws a card and has it added to his hand
+            Args:
+                self- Dealer object
+
+            '''
             #draw a card from the deck
             letters = {'A','J','K','Q'}
             card = deck.draw()

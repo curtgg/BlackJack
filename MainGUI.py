@@ -4,7 +4,7 @@ from Cardpile import cardPile
 from Game import initGame, startRound, initDeck
 
 size = width, height = 1200, 750 #very odd size
-pygame.init() #very important
+pygame.init() #very important, init module
 green = (4, 134, 21) #defines game board colour
 white = (255, 255, 255)
 black = (0, 0, 0) #used for buttons and for spades/clubs
@@ -27,11 +27,7 @@ cardPiles = []
 cardSpots = 6
 numDecks = 3
 startBetMoney = 500 ###the starting money
-#Load images
-diamond = pygame.image.load("diamond.png")
-club = pygame.image.load("club.png")
-heart = pygame.image.load("heart.png")
-spade = pygame.image.load("spade.png")
+
 
 #define strings used and written in game
 gameName = Tfont.render("BLACKJACK",0, black) #titlescreen string
@@ -68,25 +64,19 @@ cont = False
 showCount = False
 
 
-def getInput():
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.KEYDOWN:
-            return event.key
-        if event.type == pygame.QUIT: sys.exit()
-
 #draws options screen
 def drawOptionsScreen():
     screen.fill(green)
     #drawing the boxes for the first four options
     xDraw = 955
     yDraw = 140
+    #draws the boxes and triangles for the first three options, changing the y value accordingly
     for i in range(3):
         pygame.draw.polygon(screen, tableRed, ((xDraw, yDraw+16), (xDraw+20, yDraw), (xDraw+40, yDraw +16)))
         pygame.draw.rect(screen, white, (xDraw, yDraw+20, 40, 40))
         pygame.draw.polygon(screen, tableRed, ((xDraw, yDraw+64), (xDraw+20, yDraw+80), (xDraw+40, yDraw +64)))
         yDraw += 100
-
+    #draws the box and triangles for the fourth option (starting money), is different because more digits
     pygame.draw.polygon(screen, tableRed, ((940, yDraw+16), (940+38, yDraw), (938+76, yDraw +16)))
     pygame.draw.rect(screen, white, (938, 460, 76, 40))
     pygame.draw.polygon(screen, tableRed, ((940, yDraw+64), (940+38, yDraw+76), (938+76, yDraw +64)))
@@ -121,9 +111,6 @@ def drawOptionsScreen():
     pygame.display.flip() ##update display **very important**
 
 
-    #pygame.draw.line(screen, red, (600,0), (600,750)) #red line down center
-
-
 #draws title screen
 def drawTitleScreen():
     screen.fill(green)
@@ -135,8 +122,6 @@ def drawTitleScreen():
 
 #draws and updates game screen
 def drawGameScreen():
-    cardx = 580
-    cardy = 420
     dx = 40
     dy = 60
     screen.fill(green)
@@ -172,11 +157,12 @@ def drawGameScreen():
 
 
 
-while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
+while 1:
     curs_pos = pygame.mouse.get_pos()
     (cursX, cursY) = (curs_pos)
     click = 0
     clickN = pygame.mouse.get_pressed()[0] #get left click
+    #avoid multi clicking
     if clickN == 1 and click == 1:
         pass
     else:
@@ -203,7 +189,6 @@ while 1: ###WHILE LOOP NECESSARY FOR SCREEN TO STAY OPEN
             titleScreen = False
             optionsScreen = True
 
-    #Start screen functionality, maybe we can change this to "gamescreen" later?
     if startScreen:
         drawGameScreen()
         if startGame:

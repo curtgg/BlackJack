@@ -1,20 +1,17 @@
 import sys, pygame
 import time
-###not sure how much of this block is necessary, i just threw a lot of shit in
-#while i was trying to get this to work
 
 pygame.init()
-# numCards = 0
 white = (255, 255, 255)
 black = (0, 0, 0) #used for buttons and for spades/clubs
 red = (255, 0 ,0) #used for hearts/diamonds
 green = (4, 134, 21) #defines game board colour
 tableRed = (190, 34, 34)#used for table
 
-diamond = pygame.image.load("diamond.png")
-club = pygame.image.load("club.png")
-heart = pygame.image.load("heart.png")
-spade = pygame.image.load("spade.png")
+diamond = pygame.image.load("Icons/diamond.png")
+club = pygame.image.load("Icons/club.png")
+heart = pygame.image.load("Icons/heart.png")
+spade = pygame.image.load("Icons/spade.png")
 Vfont = pygame.font.Font(None, 12) #get text font
 Mfont = pygame.font.Font(None, 36) #middle card font
 Pfont = pygame.font.Font(None,25)
@@ -30,9 +27,14 @@ class cardPile:
         self.numCards = 0
         self.splitCards = 0
 
-    ###when giving inputs to this, i think we will have to split the tuples that are made
-      #when the cards are dealt for suit and value
     def drawCard(self, player, screen):
+        '''
+        Draws cards that are dealt including splits
+        Args:
+            player - Player object
+            screen - The game screen we draw onto
+        '''
+        #the player's cards are a tuple, with suit being 0 and value being 1
         if player.split:
             suit = player.hand2[-1][0]
             value = player.hand2[-1][1]
@@ -55,7 +57,6 @@ class cardPile:
         valueFont = Vfont.render(value, 0, colour)
         middleFont = Mfont.render(value, 0, colour)
 
-        #test
         if self.position == 0:
             x = 580
             y = 160
@@ -117,8 +118,6 @@ class cardPile:
         screen.blit(valueFont, (x+8,y+cardHeight-8))
         screen.blit(valueFont, (x+cardWidth-8-8,y))
 
-        ###for some reason if the numbers were centered, the letters wouldnt be.
-        #  so i had to create different cases
         letterValues = {'A','J','K','Q'}
         if value in letterValues:
             screen.blit(middleFont, (x+12, y+18))
@@ -275,8 +274,6 @@ class cardPile:
         screen.blit(valueFont2, (x2+cardWidth-8-8,y2))
 
 
-        ###for some reason if the numbers were centered, the letters wouldnt be.
-        #  so i had to create different cases
         letterValues = {'A','J','K','Q'}
         #draw card values
         if value1 in letterValues:
