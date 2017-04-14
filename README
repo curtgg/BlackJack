@@ -1,0 +1,31 @@
+Name: Curtis Goud     Name: Andrew Wood
+Section: EB2          Section: EB1
+ID: 1474244           ID: 1469497
+
+Instructions:
+To run the program you must have the pygame module installed. This can be installed
+through the pip installer for python. Once that has been done, run the game by
+executing "python MainGUI.py" from the command line in the directory that contains the
+files. This will open up the game and allow you to begin playing.
+
+From the title screen you are able to access the options menu, which allows you to
+set various settings for the game such as, number of players, bots, decks, starting
+money, and card count display. The number of players and bots is capped at 5
+because of the size of the table. When you begin the game it will be launched with
+the selected options, with the players laid out on the board as so:
+                              4   dealer   5
+                                2         3
+                                     1
+The players always take their turns before the AI and also they are set ahead of
+the players on the board, so the AI will always be the last players to take their
+turn. Rounds are sequenced as so: All players make theirs bets, then are dealt their
+first 2 cards, after that the dealer places his first card and then the players all
+take their turns in order(hit, stand, etc) when they are finished, the dealer put down
+his remaining cards till he is finished.
+
+Problems:
+No real issues but it is not completely evident when playing with multiple human players
+who's turn it is. we had planned to have an indicator but ran out of time. You will know
+for sure that it is a players turn when the program waits and doesn't proceed, and can
+easily keep track of whos turn it is mentally. I have left the print statements to the
+console on just incase.
