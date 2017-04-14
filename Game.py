@@ -48,12 +48,12 @@ def drawDealer(dealer,card):
     pygame.display.flip() ##update display **very important**
 
 def drawCards(player,card):
-        '''
-        Draws the players card using the cardPile class to determine position
-        Args:
-            Player - player object
-            card - Card to draw
-        '''
+    '''
+    Draws the players card using the cardPile class to determine position
+    Args:
+        Player - player object
+        card - Card to draw
+    '''
     #get player pos to draw cards, +1 cuz dealer is 0
     cPile = pCards[player.num+1]
     #draw cards at that pos
@@ -61,11 +61,11 @@ def drawCards(player,card):
     pygame.display.flip() ##update display **very important**
 
 def drawCount(deck):
-        '''
-        Draws the card count of the deck
-        Args:
-            deck - deck object
-        '''
+    '''
+    Draws the card count of the deck
+    Args:
+        deck - deck object
+    '''
     #draw rectangle to cover old card count
     pygame.draw.rect(screenOp[0],green,[0,10,200,30])
     #draw count
@@ -73,14 +73,14 @@ def drawCount(deck):
     screenOp[0].blit(word,(0,10))
 
 def getBet(player,deck):
-        '''
-        Gets the players bet. IF the player is a bot it computes it using the
-        computeBet function. If the player is a player it waits for their input and
-        them to click on the bet button.
-        Args:
-            Player - player object
-            deck - deck object
-        '''
+    '''
+    Gets the players bet. IF the player is a bot it computes it using the
+    computeBet function. If the player is a player it waits for their input and
+    them to click on the bet button.
+    Args:
+        Player - player object
+        deck - deck object
+    '''
     #no money to play
     if player.money < 5:
         return
@@ -473,6 +473,7 @@ def startRound(deck,dealer):
 
     #get each players bet
     for x in playList:
+        time.sleep(0.2)
         cont = getBet(x,deck)
         #if cont is true then player has exited game
         if cont:
