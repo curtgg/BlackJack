@@ -133,6 +133,7 @@ def getBet(player,deck):
                 updateStats(player,deck)
         else:
             #NOTE: IF bot compute the bet
+            pygame.event.wait()
             time.sleep(1)
             player.computeBet(deck)
             updateStats(player,deck)
@@ -179,8 +180,10 @@ def getDealerTurn(deck,dealer):
     while dealer.cardSum < 17 or (dealer.cardSum == 17 and dealer.ace):
         dealer.draw(deck)
         drawDealer(dealer,dealer.hand[-1])
+        pygame.event.wait()
         time.sleep(1)
         print("Dealer Hand: {} and Sum: {}".format(dealer.hand,dealer.cardSum))
+    pygame.event.wait()
     time.sleep(4)
     return (dealer.hand,dealer.cardSum)
 
@@ -216,6 +219,7 @@ def getPlayerTurn(player,deck,dealer):
                     player.Hit(deck)
                     drawCards(player,player.hand[-1])
                     updateStats(player,deck)
+                    pygame.event.wait()
                     time.sleep(1)
                     if player.cardSum2 > 21:
                         player.split = False
@@ -224,6 +228,7 @@ def getPlayerTurn(player,deck,dealer):
                 #Stand
                 elif turn == 'S':
                     player.Stand()
+                    pygame.event.wait()
                     time.sleep(1)
                     return False
                     print("Stand")
@@ -234,6 +239,7 @@ def getPlayerTurn(player,deck,dealer):
                     updateStats(player,deck)
                     player.split = False
                     print("Double")
+                    pygame.event.wait()
                     time.sleep(1)
                     return False
         else:
@@ -334,12 +340,14 @@ def getPlayerTurn(player,deck,dealer):
                     drawCards(player,player.hand[-1])
                     updateStats(player,deck)
                     print("Hit: {}, Sum: {}".format(player.hand,player.cardSum))
+                    pygame.event.wait()
                     time.sleep(1)
                     if player.cardSum > 21:
                         return False
                 elif result == 'S':
                     print("Stand: {}, Sum: {}".format(player.hand,player.cardSum))
                     player.Stand()
+                    pygame.event.wait()
                     time.sleep(1)
                     return False
                 elif result == 'D':
@@ -347,6 +355,7 @@ def getPlayerTurn(player,deck,dealer):
                     drawCards(player,player.hand[-1])
                     updateStats(player,deck)
                     print("Double: {}, Sum: {}".format(player.hand,player.cardSum))
+                    pygame.event.wait()
                     time.sleep(1)
                     return False
                 elif result == 'X':
@@ -355,6 +364,7 @@ def getPlayerTurn(player,deck,dealer):
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
                         updateStats(player,deck)
+                        pygame.event.wait()
                         time.sleep(1)
                         if player.cardSum > 21:
                             return False
@@ -366,6 +376,7 @@ def getPlayerTurn(player,deck,dealer):
                         player.Hit(deck)
                         drawCards(player,player.hand[-1])
                         updateStats(player,deck)
+                        pygame.event.wait()
                         time.sleep(1)
 
 
